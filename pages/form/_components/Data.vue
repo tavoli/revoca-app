@@ -1,7 +1,9 @@
  <script setup lang="ts">
+  import type { Form } from '../index.vue';
+
   const step = useState("step")
   const sentences = useState("sentences")
-  const form = useState<{rawText: string, imageUrl: string, errors: any}>("form")
+  const form = useState<Form>("form")
 
   const onFileChange = (e: Event) => {
     const input = e.target as HTMLInputElement;

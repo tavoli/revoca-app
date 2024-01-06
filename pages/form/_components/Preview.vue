@@ -3,6 +3,11 @@
 
   const onSubmit = (e: Event) => {
     e.preventDefault();
+
+    $fetch('/api/books/post', {
+      method: 'POST',
+      body: { sentences: sentences.value },
+    })
   };
 </script>
 
