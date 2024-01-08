@@ -1,12 +1,31 @@
 <script setup lang="ts">
+  import type { Form } from '../index.vue';
+
+  const form = useState<Form>("form")
   const sentences = useState("sentences", () => []) 
+
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .replace(/\s+/g, '-') 
+      .replace(/[^\w\-]+/g, '') 
+      .replace(/\-\-+/g, '-') 
+      .replace(/^-+/, '') 
+      .replace(/-+$/, '');
+  };
 
   const onSubmit = (e: Event) => {
     e.preventDefault();
 
-    $fetch('/api/books/post', {
+    $fetch('/api/books', {
       method: 'POST',
-      body: { sentences: sentences.value },
+      body: { 
+        title: form.value.title,
+        slug: slugify(form.value.title),
+        imageUrl: form.value.imageUrl,
+        sentences: sentences.value 
+      },
     })
   };
 </script>

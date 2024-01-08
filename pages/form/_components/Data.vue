@@ -20,6 +20,9 @@
   const onSubmit = (e: Event) => {
     e.preventDefault();
     if (!form.value.rawText) {
+      form.value.errors.set('title', 'title is required');
+    }
+    if (!form.value.rawText) {
       form.value.errors.set('rawText', 'raw text is required');
     }
     if (!form.value.imageUrl) {
@@ -33,6 +36,15 @@
 
  <template>
   <form :v-on-submit="onSubmit">
+    <div>
+      <label for="title">title</label>
+      <input 
+        id="title" 
+        name="title" 
+        v-model="form.title"
+        type="text" 
+      />
+    </div>
     <div>
       <label for="drag">drag a file</label>
       <input 

@@ -3,6 +3,7 @@
   import Preview from './_components/Preview.vue';  
 
   export interface Form {
+    title: string;
     rawText: string;
     imageUrl: string;
     errors: Map<string, string>;
@@ -10,6 +11,7 @@
 
   const step = useState("step", () => 1)
   useState<Form>("form", () => ({
+    title: 'put your title here',
     rawText: 'put your text here',
     imageUrl: 'put your image url here',
     errors: new Map<string, string>(),
