@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import type { Form } from '../index.vue';
 
+  const router = useRouter()
+
   const form = useState<Form>("form")
   const sentences = useState("sentences", () => []) 
 
@@ -18,13 +20,20 @@
   const onSubmit = (e: Event) => {
     e.preventDefault();
 
+    const username = localStorage.getItem('u')
+    if (!username) {
+      router.push('/')
+      return
+    }
+
     $fetch('/api/books', {
       method: 'POST',
       body: { 
         title: form.value.title,
         slug: slugify(form.value.title),
         imageUrl: form.value.imageUrl,
-        sentences: sentences.value 
+        sentences: sentences.value,
+        username,
       },
     })
   };

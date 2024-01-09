@@ -1,8 +1,8 @@
 <template>
   <main>
     <h1>enter</h1>
-    <input type="text" placeholder="username">
-    <button @click="router.push('/form')">
+    <input type="text" placeholder="username" v-model="username" />
+    <button @click="createUserSession">
       submit
     </button>
   </main> 
@@ -12,7 +12,23 @@
   import { onMounted } from 'vue';
   import { useRouter } from 'vue-router';
 
+  const username = ref('');
   const router = useRouter();
+
+  const createUserSession = () => {
+    if (username.value) {
+      localStorage.setItem('u', username.value)
+
+      $fetch(`/api/session`, {
+        method: 'POST',
+        body: JSON.stringify({ 
+          username: username.value 
+        }),
+      })
+
+      router.push('/form');
+    }
+  };
 
   onMounted(() => {
     const input = document.querySelector('input')

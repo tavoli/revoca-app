@@ -1,15 +1,16 @@
+import { nanoid } from "nanoid"
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+  const user = {
+    id: nanoid(8),
+    username: body.username,
+  }
+
 
   try {
-    const user_id = await kv.hget(body.username, 'id')
-    console.log(user_id)
-    await insertBook(db, {
-      title: body.title,
-      slug: body.slug,
-      image_url: body.imageUrl,
-      user_id,
-    })
+    await insertUser(user)
+    await kv.hset(body.username, { id: user.id })
   } catch (error) {
     console.error(error)
     return {
@@ -19,7 +20,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    statusCode: 200,
+    statusCode: 201,
     body: { message: 'success' }
   }
 })
