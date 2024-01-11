@@ -3,13 +3,19 @@ export default defineEventHandler(async (event) => {
 
   try {
     const user_id = await kv.hget(body.username, 'id')
-    console.log(user_id)
-    await insertBook(db, {
+    const book_id = await insertBook({
       title: body.title,
       slug: body.slug,
       image_url: body.imageUrl,
       user_id,
     })
+
+    const sentences = body.sentences.map((sentence: string) => ({
+      book_id,
+      sentence,
+    }))
+
+    await insertSentences(sentences)
   } catch (error) {
     console.error(error)
     return {
