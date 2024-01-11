@@ -23,4 +23,5 @@ export interface BooksFeedsTable {
 export type Book = Selectable<BooksTable>;
 export type NewBook = Insertable<BooksTable>;
 export type NewSentences = Insertable<BookSentencesTable>;
+export type NewBookFeed = Insertable<BooksFeedsTable>;
 

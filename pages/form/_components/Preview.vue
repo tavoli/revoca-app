@@ -26,16 +26,20 @@
       return
     }
 
+    const slug = slugify(form.value.title)
+
     $fetch('/api/books', {
       method: 'POST',
       body: { 
         title: form.value.title,
-        slug: slugify(form.value.title),
         imageUrl: form.value.imageUrl,
         sentences: sentences.value,
         username,
+        slug,
       },
     })
+
+    router.push(['/reader', slug].join('/'))
   };
 </script>
 
