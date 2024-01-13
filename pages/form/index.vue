@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="tsx">
   import Data from './_components/Data.vue';
   import Preview from './_components/Preview.vue';  
 
@@ -23,4 +23,3 @@
   <Preview v-if="step === 2" />
   <Data v-else />
 </template>
-

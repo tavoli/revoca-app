@@ -1,5 +1,5 @@
- <script setup lang="ts">
-  import type { Form } from '../index.vue';
+ <script setup lang="tsx">
+  import type {Form} from '../index.vue';
 
   const step = useState("step")
   const sentences = useState("sentences")

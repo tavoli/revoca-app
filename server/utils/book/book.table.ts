@@ -2,7 +2,7 @@ import { ColumnType, Generated, Insertable, Selectable } from "kysely";
 
 export interface BooksTable {
   id: Generated<number>,
-  user_id: number,
+  user_id: string,
   title: string,
   slug: string,
   image_url?: string | null,
@@ -10,18 +10,12 @@ export interface BooksTable {
 }
 
 export interface BookSentencesTable {
+  id: Generated<number>,
   book_id: number,
   sentence: string,
-}
-
-export interface BooksFeedsTable {
-  book_id: number,
-  user_id: number,
-  next_cursor: number,
 }
 
 export type Book = Selectable<BooksTable>;
 export type NewBook = Insertable<BooksTable>;
 export type NewSentences = Insertable<BookSentencesTable>;
-export type NewBookFeed = Insertable<BooksFeedsTable>;
 

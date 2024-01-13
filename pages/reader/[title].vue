@@ -1,11 +1,11 @@
-<script setup lang="ts">
+<script setup lang="tsx">
+  const query = useRequestURL()
   onMounted(() => {
     $fetch('/api/paginate', {
       method: 'POST',
       body: { 
         username: localStorage.getItem('u'),
-        title: 'put-your-title-here',
-        nextCursor: 0,
+        slug: query.pathname.split('/')[2],
       },
     })
   })

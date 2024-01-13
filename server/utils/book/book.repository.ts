@@ -12,19 +12,18 @@ export async function insertSentences(body: NewSentences) {
     .execute();
 }
 
-export async function paginateSentencesByBookSlug(slug: string, nextCursor: number) {
-  return db.selectFrom('book_sentences as bs')
-    .select(['bs.id', 'bs.sentence', 'bs.book_id'])
-    .innerJoin('books as b', 'b.id', 'bs.book_id')
-    .where('b.slug', '=', slug)
-    .where('bs.id', '>', nextCursor)
-    .orderBy('bs.id', 'asc')
-    .limit(10)
-    .execute();
-}
+export async function paginateBook(slug: string, nextCursor?: number) {
+  let query =  db.selectFrom('book_sentences')
+    .select(['book_sentences.id', 'sentence'])
+    .innerJoin('books', 'book_sentences.book_id', 'books.id')
+    .where('books.slug', '=', slug)
 
-export async function insertLastFeed(body: NewBookFeed) {
-  return db.insertInto('books_feeds')
-    .values(body)
+  if (nextCursor) {
+    query = query.where('book_sentences.id', '>', nextCursor)
+  }
+
+  return query
+    .orderBy('book_sentences.id', 'asc')
+    .limit(10)
     .execute();
 }

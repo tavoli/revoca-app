@@ -1,4 +1,5 @@
-<script setup lang="ts">
+<script setup lang="tsx">
+  import { nanoid } from 'nanoid';
   import type { Form } from '../index.vue';
 
   const router = useRouter()
@@ -27,6 +28,7 @@
     }
 
     const slug = slugify(form.value.title)
+    const slugaid = `${slug}-${nanoid(7)}`
 
     $fetch('/api/books', {
       method: 'POST',
@@ -35,11 +37,11 @@
         imageUrl: form.value.imageUrl,
         sentences: sentences.value,
         username,
-        slug,
+        slug: slugaid,
       },
     })
 
-    router.push(['/reader', slug].join('/'))
+    router.push(['/reader', slugaid].join('/'))
   };
 </script>
 

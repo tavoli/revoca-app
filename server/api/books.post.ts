@@ -2,7 +2,15 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
   try {
-    const user_id = await kv.hget(body.username, 'id')
+    const user_id = await kv.hget<string>(body.username, 'id')
+
+    if (!user_id) {
+      return {
+        statusCode: 400,
+        body: {message: 'user not found'},
+      }
+    }
+
     const book_id = await insertBook({
       title: body.title,
       slug: body.slug,

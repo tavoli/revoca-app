@@ -1,32 +1,35 @@
 export default defineEventHandler(async (event) => {
-  const {title, nextCursor, username} = await readBody(event)
+  const body = await readBody(event)
 
-  // TODO get last feed on database
-  // do not ask for nextCursor on request
-  //  LastFeed table must to lay on redis
-  //  because it is a cache and will be get lots of times
-  const sentences = await paginateSentencesByBookSlug(title, nextCursor)
+  const cacheKey = `${body.username}:${body.slug}`
+  let nextCursor = body.nextCursor
 
-  if (sentences.length === 0) {
+  if (!body.nextCursor) {
+    nextCursor = await kv.hget<number>(cacheKey, 'next_cursor') ?? undefined
+  }
+
+  const sentences = await paginateBook(body.slug, nextCursor)
+
+  if (sentences.length === 0 && !nextCursor) {
     return {
       statusCode: 404,
-      body: { message: 'not found' }
+      body: { message: 'book not found' },
     }
   }
 
-  const user_id = await kv.hget(username, 'id')
+  if (sentences.length === 0) {
+    return {
+      statusCode: 200,
+      body: [],
+    }
+  }
+
   const lastSentence = sentences[sentences.length - 1]
-
-  await insertLastFeed({
-    book_id: lastSentence.book_id,
-    next_cursor: lastSentence.id,
-    user_id,
-  })
-
-  appendHeader(event, 'X-Next-Cursor', lastSentence.id)
+  await kv.hset(cacheKey, { next_cursor: lastSentence.id })
+  appendHeader(event, 'X-Next-Cursor', String(lastSentence.id))
 
   return {
     statusCode: 200,
-    body: sentences
+    body: sentences.map(({sentence}) => sentence),
   }
 })
