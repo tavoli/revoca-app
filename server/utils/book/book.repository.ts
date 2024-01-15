@@ -14,7 +14,7 @@ export async function insertSentences(body: NewSentences) {
 
 export async function paginateSentences(slug: string, nextCursor?: number) {
   let query =  db.selectFrom('book_sentences')
-    .select(['book_sentences.id', 'sentence'])
+    .select(['book_sentences.id', 'sentence', 'book_id'])
     .innerJoin('books', 'book_sentences.book_id', 'books.id')
     .where('books.slug', '=', slug)
 
