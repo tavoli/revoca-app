@@ -24,6 +24,11 @@ export default defineEventHandler(async (event) => {
     }))
 
     await insertSentences(sentences)
+
+    await kv.zadd(
+      'titles',
+      { member: body.title, score: book_id },
+    );
   } catch (error) {
     console.error(error)
     return {

@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     nextCursor = await kv.hget<number>(cacheKey, 'next_cursor') ?? undefined
   }
 
-  const sentences = await paginateBook(body.slug, nextCursor)
+  const sentences = await paginateSentences(body.slug, nextCursor)
 
   if (sentences.length === 0 && !nextCursor) {
     return {

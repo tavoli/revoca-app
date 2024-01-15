@@ -1,7 +1,7 @@
 <script setup lang="tsx">
   const query = useRequestURL()
   onMounted(() => {
-    $fetch('/api/paginate', {
+    $fetch('/api/sentences/paginate', {
       method: 'POST',
       body: { 
         username: localStorage.getItem('u'),
