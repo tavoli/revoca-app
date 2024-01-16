@@ -34,6 +34,17 @@
       },
     })
 
+    $fetch('/api/books', {
+      method: 'POST',
+      body: { 
+        title: form.value.title,
+        imageUrl: form.value.imageUrl,
+        sentences: sentences.value,
+        slug: `${slugaid}-${nanoid(7)}`,
+        pins: { ids: [1, 2, 3] }
+      },
+    })
+
     router.push(['/reader', slugaid].join('/'))
   };
 </script>

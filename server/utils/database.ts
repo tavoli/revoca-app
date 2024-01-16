@@ -5,8 +5,8 @@ export interface Database {
   users: UsersTable,
   books: BooksTable,
   book_sentences: BookSentencesTable,
-  books_feeds: BooksFeedsTable,
-  pin_words: PinWordsTable,
+  pin_words: PinwordTable,
+  books_pins: BooksPinsTable,
 }
 
 const dialect = new PostgresDialect({
