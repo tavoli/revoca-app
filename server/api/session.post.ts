@@ -17,6 +17,10 @@ export default defineEventHandler(async (event) => {
 
     setCookie(event, 'session', token, jwt.cookieConfig);
 
+    if (!existingUser) {
+      await insertUser(user);
+    }
+      
     return {
       statusCode: 200,
       body: { message: 'success' },

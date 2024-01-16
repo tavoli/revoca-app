@@ -26,8 +26,6 @@ export default defineEventHandler(async (event) => {
     created_at: (new Date()).toISOString()
   }
 
-  console.log(pinword)
-
   await insertPin(pinword)
 
   return {
