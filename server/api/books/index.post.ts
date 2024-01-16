@@ -1,21 +1,20 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
 
-  try {
-    const user_id = await kv.hget<string>(body.username, 'id')
-
-    if (!user_id) {
-      return {
-        statusCode: 400,
-        body: {message: 'user not found'},
-      }
+  const user = event.context.user
+  if (!user) {
+    return {
+      statusCode: 401,
+      body: 'unauthorized',
     }
+  }
 
+  try {
     const book_id = await insertBook({
       title: body.title,
       slug: body.slug,
       image_url: body.imageUrl,
-      user_id,
+      user_id: user.id,
     })
 
     const sentences = body.sentences.map((sentence: string) => ({

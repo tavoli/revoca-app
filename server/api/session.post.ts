@@ -2,41 +2,31 @@ import { nanoid } from "nanoid";
 
 export default defineEventHandler(async (event) => {
   try {
-    const body = await readBody(event)
+    const body = await readBody(event);
 
     const user = {
       id: nanoid(8),
       username: body.username,
-    }
+    };
 
-    const ttl7days = 60 * 60 * 24 * 7
-    const when = +new Date()
+    const existingUser = await getUserByUsername(user.username);
 
-    const hasSession = await kv.hget(user.username, 'id')
+    const tokenPayload = existingUser || user;
 
-    if (hasSession) {
-      kv.hset(user.username, { id: hasSession, ttl: ttl7days, when })
-    } else {
-      const existingUser = await getUserByUsername(user.username)
+    const token = jwt.createToken(tokenPayload);
 
-      if (existingUser) {
-        kv.hset(existingUser.username, { id: existingUser.id, ttl: ttl7days, when })
-      } else {
-        await insertUser(user);
-        kv.hset(user.username, { id: user.id, ttl: ttl7days, when })
-      }
-    }
+    setCookie(event, 'session', token, jwt.cookieConfig);
 
     return {
       statusCode: 200,
       body: { message: 'success' },
-    }
+    };
   } catch (error) {
-    console.error(error)
+    console.error(error);
 
     return {
       statusCode: 500,
       body: { message: 'error' },
-    }
+    };
   }
-})
+});

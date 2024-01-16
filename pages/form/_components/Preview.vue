@@ -21,12 +21,6 @@
   const onSubmit = (e: Event) => {
     e.preventDefault();
 
-    const username = localStorage.getItem('u')
-    if (!username) {
-      router.push('/')
-      return
-    }
-
     const slug = slugify(form.value.title)
     const slugaid = `${slug}-${nanoid(7)}`
 
@@ -36,7 +30,6 @@
         title: form.value.title,
         imageUrl: form.value.imageUrl,
         sentences: sentences.value,
-        username,
         slug: slugaid,
       },
     })

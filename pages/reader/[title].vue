@@ -6,26 +6,18 @@
 
   const query = useRequestURL()
   onMounted(() => {
-    $fetch('/api/sentences/paginate', {
-      method: 'POST',
-      body: { 
-        username: localStorage.getItem('u'),
-        slug: query.pathname.split('/')[2],
-        // nextCursor: 0, // use this to reset cursor
-      },
-    })
+    $fetch(`/api/sentences/paginate?s=${query.pathname.split('/')[2]}`)
 
     $fetch('/api/pinwords', {
       method: 'POST',
       body: { 
-        username: localStorage.getItem('u'),
         book_id: 21,
         sentence_id: 10,
         word: randomWord(),
       },
     })
 
-    $fetch(`/api/pinwords/paginate?n=0&u=${localStorage.getItem('u')}`)
+    $fetch(`/api/pinwords/paginate?n=0`)
   })
 
 </script>

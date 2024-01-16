@@ -1,25 +1,16 @@
 export default defineEventHandler(async (event) => {
   const query = getQuery<{n: string, u: string}>(event)
   const nextCursor = +query.n || 0
-  const username = query.u
 
-  if (!username) {
+  const user = event.context.user
+  if (!user) {
     return {
-      statusCode: 400,
-      body: {message: 'username is required'},
+      statusCode: 401,
+      body: 'unauthorized',
     }
   }
 
-  const userId = await kv.hget<string>(username, 'id')
-
-  if (!userId) {
-    return {
-      statusCode: 404,
-      body: {message: 'user not found'},
-    }
-  }
-
-  const pinwords = await paginatePins(userId, nextCursor)
+  const pinwords = await paginatePins(user.id, nextCursor)
 
   if (pinwords.length === 0) {
     return {
