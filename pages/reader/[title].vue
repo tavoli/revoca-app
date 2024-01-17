@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-  function randomWord() {
+  function randomPin() {
     const list = ['mean', 'chain', 'sail', 'sugar', 'screw', 'sneeze', 'societ']
     return list[Math.floor(Math.random() * list.length)]
   }
@@ -8,16 +8,16 @@
   onMounted(() => {
     $fetch(`/api/sentences/paginate?s=${query.pathname.split('/')[2]}`)
 
-    $fetch('/api/pinwords', {
+    $fetch('/api/pins', {
       method: 'POST',
       body: { 
         book_id: 21,
         sentence_id: 10,
-        word: randomWord(),
+        pin: randomPin(),
       },
     })
 
-    $fetch(`/api/pinwords/paginate?n=0`)
+    $fetch(`/api/pins/paginate?n=0`)
     $fetch('/api/books/by-pins?p=1,2,3')
   })
 

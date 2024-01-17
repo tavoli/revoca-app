@@ -1,8 +1,8 @@
 const privateRoutes = [
   '/api/books',
   '/api/books/by-pins',
-  '/api/pinwords',
-  '/api/pinwords/paginate',
+  '/api/pins',
+  '/api/pins/paginate',
   '/api/sentences/paginate',
 ]
 

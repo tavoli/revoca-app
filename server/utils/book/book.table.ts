@@ -18,7 +18,7 @@ export interface BookSentencesTable {
 export interface BooksPinsTable {
   id: Generated<number>,
   book_id: BooksTable['id'],
-  pin_id: PinwordTable['id'],
+  pin_id: PinTable['id'],
   user_id: UsersTable['id'],
 }
 

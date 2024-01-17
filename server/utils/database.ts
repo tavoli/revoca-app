@@ -5,7 +5,7 @@ export interface Database {
   users: UsersTable,
   books: BooksTable,
   book_sentences: BookSentencesTable,
-  pin_words: PinwordTable,
+  pins: PinTable,
   books_pins: BooksPinsTable,
 }
 

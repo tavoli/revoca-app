@@ -9,16 +9,16 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const meanings = await getMeanings(body.word)
+  const meanings = await getMeanings(body.pin)
   const partsOfSpeech = meanings.partsOfSpeech.join('\n')
   const definitions = meanings.definitions.join('\n')
   const synonyms = meanings.synonyms.join('\n')
 
-  const pinword = {
+  const pin = {
     user_id: user.id,
     book_id: body.book_id,
     sentence_id: body.sentence_id,
-    word: body.word,
+    pin: body.pin,
     parts_of_speech: partsOfSpeech || null,
     definitions: definitions || null,
     synonyms: synonyms || null,
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
     created_at: (new Date()).toISOString()
   }
 
-  await insertPin(pinword)
+  await insertPin(pin)
 
   return {
     statusCode: 200,
@@ -34,8 +34,8 @@ export default defineEventHandler(async (event) => {
   }
 })
 
-async function getMeanings(word: string) {
-  const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
+async function getMeanings(pin: string) {
+  const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${pin}`)
   const json = await response.json()
 
   const definitions: string[] = []

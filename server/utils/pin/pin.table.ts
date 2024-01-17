@@ -1,11 +1,11 @@
 import { ColumnType, Generated, Insertable, Selectable } from "kysely";
 
-export interface PinwordTable {
+export interface PinTable {
   id: Generated<number>,
   user_id: string,
   book_id: number,
   sentence_id: number,
-  word: string,
+  pin: string,
   parts_of_speech?: string | null,
   definitions?: string | null,
   synonyms?: string | null,
@@ -13,5 +13,5 @@ export interface PinwordTable {
   created_at: ColumnType<Date, string | undefined, never>,
 }
 
-export type Pinword = Selectable<PinwordTable>
-export type NewPinword = Insertable<PinwordTable>
+export type Pin = Selectable<PinTable>
+export type NewPin = Insertable<PinTable>

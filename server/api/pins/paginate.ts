@@ -10,20 +10,20 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const pinwords = await paginatePins(user.id, nextCursor)
+  const pins = await paginatePins(user.id, nextCursor)
 
-  if (pinwords.length === 0) {
+  if (pins.length === 0) {
     return {
       statusCode: 404,
-      body: { message: 'pinwords not found' },
+      body: { message: 'pins not found' },
     }
   }
 
-  const lastPinword = pinwords[pinwords.length - 1]
-  appendHeader(event, 'X-Next-Cursor', String(lastPinword.id))
+  const lastPin = pins[pins.length - 1]
+  appendHeader(event, 'X-Next-Cursor', String(lastPin.id))
 
   return {
     statusCode: 200,
-    body: pinwords
+    body: pins
   }
 })
