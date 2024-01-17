@@ -42,3 +42,13 @@ export async function paginateBooks(nextCursor: number = 0) {
     .limit(10)
     .execute();
 }
+
+export async function getBooksByPins(userId: string, pinIds: number[]) {
+  return db.selectFrom('books as b')
+    .select(['b.id', 'title', 'slug', 'image_url'])
+    .distinct()
+    .innerJoin('books_pins as bp', 'b.id', 'bp.book_id')
+    .where('bp.user_id', '=', userId)
+    .where('bp.pin_id', 'in', pinIds)
+    .execute();
+}

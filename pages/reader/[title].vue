@@ -18,6 +18,7 @@
     })
 
     $fetch(`/api/pinwords/paginate?n=0`)
+    $fetch('/api/books/by-pins?p=1,2,3')
   })
 
 </script>
