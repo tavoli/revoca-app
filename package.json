@@ -12,6 +12,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",
     "@types/pg-pool": "^2.0.6",
+    "@types/swagger-jsdoc": "^6.0.4",
     "nuxt": "^3.9.0",
     "vue": "^3.4.5",
     "vue-router": "^4.2.5"
@@ -22,6 +23,7 @@
     "kysely": "^0.27.2",
     "nanoid": "^5.0.4",
     "pg-pool": "^3.6.1",
+    "swagger-jsdoc": "latest",
     "zod": "^3.22.4"
   }
 }

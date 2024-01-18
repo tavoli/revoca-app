@@ -5,6 +5,16 @@ const searchQuerySchema = z.object({
   n: z.string().regex(/^\d+$/).optional().default('0'),
 })
 
+/**
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     description: Welcome to swagger-jsdoc!
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => searchQuerySchema.safeParse(query))
 

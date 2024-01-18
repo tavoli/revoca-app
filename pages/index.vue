@@ -37,9 +37,6 @@
 </script>
 
 <style>
-  body {
-    background-color: #121212;
-  }
   main {
     margin: 0 auto;
     width: 300px;
