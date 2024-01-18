@@ -1,5 +1,22 @@
+import { z } from 'zod'
+
+const pinBodySchema = z.object({
+  book_id: z.number().int().positive(),
+  sentence_id: z.number().int().positive(),
+  pin: z.string().min(1).max(255),
+})
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
+  const result = await readValidatedBody(event, (body) => pinBodySchema.safeParse(body))
+
+  if (!result.success) {
+    return {
+      statusCode: 400,
+      body: result.error.issues,
+    }
+  }
+
+  const body = result.data
 
   const user = event.context.user
   if (!user) {

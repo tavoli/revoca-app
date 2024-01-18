@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const bookSchema = z.object({
+const bookBodySchema = z.object({
   title: z.string(),
   imageUrl: z.string(),
   sentences: z.array(z.string()),
@@ -11,12 +11,12 @@ const bookSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const result = await readValidatedBody(event, body => bookSchema.safeParse(body))
+  const result = await readValidatedBody(event, body => bookBodySchema.safeParse(body))
 
   if (!result.success) {
     return {
       statusCode: 400,
-      body: result.error,
+      body: result.error.issues,
     }
   }
 

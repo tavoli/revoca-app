@@ -1,6 +1,20 @@
+import {z} from 'zod'
+
+const paginateQuerySchema = z.object({
+  n: z.string().regex(/^\d+$/).optional().default('0'),
+})
+
 export default defineEventHandler(async (event) => {
-  const query = getQuery<{n: string, u: string}>(event)
-  const nextCursor = +query.n || 0
+  const query = await getValidatedQuery(event, (query) => paginateQuerySchema.safeParse(query))
+
+  if (!query.success) {
+    return {
+      statusCode: 400,
+      body: query.error.issues,
+    }
+  }
+
+  const nextCursor = +query.data.n
 
   const user = event.context.user
   if (!user) {

@@ -1,12 +1,24 @@
 import { nanoid } from "nanoid";
+import { z } from 'zod'
+
+const sessionQuerySchema = z.object({
+  username: z.string().min(3).max(20),
+})
 
 export default defineEventHandler(async (event) => {
-  try {
-    const body = await readBody(event);
+  const result = await readValidatedBody(event, (body) => sessionQuerySchema.safeParse(body))
 
+  if (!result.success) {
+    return {
+      statusCode: 400,
+      body: result.error.issues,
+    }
+  }
+
+  try {
     const user = {
       id: nanoid(8),
-      username: body.username,
+      username: result.data.username,
     };
 
     const existingUser = await getUserByUsername(user.username);

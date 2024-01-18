@@ -1,6 +1,21 @@
+import { z } from 'zod'
+
+const paginateQuerySchema = z.object({
+  n: z.string().regex(/^\d+$/).optional().default('0'),
+  s: z.string(),
+})
+
 export default defineEventHandler(async (event) => {
-  const query = getQuery<{n: string, s: string}>(event)
-  const slug = query.s
+  const query = await getValidatedQuery(event, (query) => paginateQuerySchema.safeParse(query))
+
+  if (!query.success) {
+    return {
+      statusCode: 400,
+      body: query.error.issues,
+    }
+  }
+
+  const slug = query.data.s
 
   const user = event.context.user
   if (!user) {
@@ -12,9 +27,9 @@ export default defineEventHandler(async (event) => {
 
   const cacheCursorK = `${user.username}:${slug}`
 
-  const nextCursor = query.n === undefined
+  const nextCursor = query.data.n === undefined
     ? await kv.hget<number>(cacheCursorK, 'next_cursor') ?? undefined
-    : +query.n
+    : +query.data.n
 
   const sentences = await paginateSentences(slug, nextCursor)
 

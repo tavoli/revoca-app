@@ -1,8 +1,22 @@
+import {z} from 'zod'
+
+const searchQuerySchema = z.object({
+  q: z.string().optional().default(''),
+  n: z.string().regex(/^\d+$/).optional().default('0'),
+})
+
 export default defineEventHandler(async (event) => {
-  const query = getQuery<{q: string, n: string}>(event)
-  
-  const nextCursor = +query.n || 0
-  const q = query.q ?? ''
+  const query = await getValidatedQuery(event, (query) => searchQuerySchema.safeParse(query))
+
+  if (!query.success) {
+    return {
+      statusCode: 400,
+      body: query.error.issues,
+    }
+  }
+
+  const nextCursor = +query.data.n
+  const q = query.data.q
 
   const [cursor, items] = await kv.zscan('titles', nextCursor, {
     match: `*${q}*`,
