@@ -31,6 +31,10 @@
         rel: "stylesheet",
         href: "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.11.1/swagger-ui.min.css",
       },
+      {
+        rel: "stylesheet",
+        href: "./swagger-ui-dark.css",
+      },
     ],
   });
 

@@ -6,24 +6,60 @@ const pinBodySchema = z.object({
   pin: z.string().min(1).max(255),
 })
 
+/**
+ * @openapi
+ *
+ * /pins:
+ *   post:
+ *     security:
+ *       - HeaderAuth: []
+ *
+ *     summary: Create a new pin
+ *     description: Create a new pin
+ *
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               book_id:
+ *                 type: integer
+ *                 format: int
+ *                 minimum: 1
+ *               sentence_id:
+ *                 type: integer
+ *                 format: int
+ *                 minimum: 1
+ *               pin:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 255
+ *           example:
+ *             book_id: 1
+ *             sentence_id: 2
+ *             pin: "Sample Pin Text"
+ *
+ *     responses:
+ *       '200':
+ *         description: The pin was successfully created
+ */
+
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) => pinBodySchema.safeParse(body))
 
   if (!result.success) {
-    return {
-      statusCode: 400,
-      body: result.error.issues,
-    }
+    setResponseStatus(event, 400)
+    return result.error.issues
   }
 
   const body = result.data
 
   const user = event.context.user
   if (!user) {
-    return {
-      statusCode: 401,
-      body: 'unauthorized',
-    }
+    setResponseStatus(event, 401)
+    return { error: 'Unauthorized' }
   }
 
   const meanings = await getMeanings(body.pin)
@@ -45,10 +81,7 @@ export default defineEventHandler(async (event) => {
 
   await insertPin(pin)
 
-  return {
-    statusCode: 200,
-    body: { message: 'success' }
-  }
+  return { ok: true }
 })
 
 async function getMeanings(pin: string) {

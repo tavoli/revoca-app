@@ -6,23 +6,55 @@ const searchQuerySchema = z.object({
 })
 
 /**
-/**
  * @openapi
- * /:
+ *
+ * /books/search:
  *   get:
- *     description: Welcome to swagger-jsdoc!
+ *     summary: Search books
+ *     description: Returns a list of titles that match the search query.
+ *
+ *     parameters:
+ *     - in: query
+ *       name: q
+ *     - in: query
+ *       name: n
+ *
  *     responses:
  *       200:
- *         description: Returns a mysterious string.
+ *         description: A list of titles.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Titles'
+ *
+ *       400:
+ *         description: Invalid query.
+ *
+ *       404:
+ *         description: No books found.
+ *
+ * components:
+ *   schemas:
+ *     Titles:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/Title'
+ *
+ *     Title:
+ *       type: object
+ *       properties:
+ *         title:
+ *           type: string
+ *           description: The title of the book
+ *           example: "Sample Title"
  */
+
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => searchQuerySchema.safeParse(query))
 
   if (!query.success) {
-    return {
-      statusCode: 400,
-      body: query.error.issues,
-    }
+    setResponseStatus(event, 400)
+    return query.error.issues
   }
 
   const nextCursor = +query.data.n
@@ -34,10 +66,8 @@ export default defineEventHandler(async (event) => {
   })
 
   if (items && items?.length === 0) {
-    return {
-      statusCode: 404,
-      body: { message: 'books not found' },
-    }
+    setResponseStatus(event, 404)
+    return { error: 'Not found' }
   }
 
   const titles = items.reduce((acc: any, item: any, index: number) => {
@@ -51,8 +81,5 @@ export default defineEventHandler(async (event) => {
 
   appendHeader(event, 'X-Next-Cursor', String(cursor))
 
-  return {
-    statusCode: 200,
-    body: titles
-  }
+  return titles
 })

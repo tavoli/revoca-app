@@ -14,11 +14,11 @@ export default defineEventHandler(() => {
         : ["http", "https"],
     components: {
       securitySchemes: {
-        CookieAuth: {
+        HeaderAuth: {
           type: "apiKey",
-          in: "cookie",
-          name: "session",
-        },
+          in: "header",
+          name: "Authorization",
+        }
       },
     },
     security: {

@@ -1,3 +1,5 @@
+import {Jwt} from "jsonwebtoken"
+
 const privateRoutes = [
   '/api/books',
   '/api/books/by-pins',
@@ -12,24 +14,26 @@ const publicRoutes = [
   '/api/books/paginate',
 ] */
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const currentRequest = getRequestURL(event)
   const currentRoute = currentRequest.pathname
 
   if (privateRoutes.includes(currentRoute)) {
-    const token = getCookie(event, 'session')
+    const token = getHeader(event, 'Authorization')
 
     if (!token) {
-      throw new Error('unauthorized')
+      setResponseStatus(event, 401)
+      return { error: 'Unauthorized' }
     }
 
-    let user: User;
+    let user: Jwt;
 
     try {
-      user = await jwt.verifyToken(token)
+      user = jwt.verifyToken(token)
     } catch (error) {
       console.error(error)
-      throw new Error('unauthorized')
+      setResponseStatus(event, 401)
+      return { error: 'Unauthorized' }
     }
 
     event.context.user = user

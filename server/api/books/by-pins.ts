@@ -1,42 +1,69 @@
 import {z} from 'zod'
 
 const idsQuerySchema = z.object({
-  p: z.string().regex(/^\d+(,\d+)*$/),
+  ids: z.string().regex(/^\d+(,\d+)*$/),
 })
+
+/**
+ * @openapi
+ *
+ * /books/by-pins:
+ *   get:
+ *     security:
+ *      - HeaderAuth: []
+ *
+ *     summary: Get books by pins
+ *     description: Returns a list of books that match the pins ids.
+ *
+ *     parameters:
+ *     - in: query
+ *       name: ids
+ *       description: Comma separated list of pin ids.
+ *
+ *     responses:
+ *       200:
+ *         description: A list of books.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Books'
+ *
+ *       401:
+ *         description: Unauthorized.
+ *
+ *       400:
+ *         description: Zod validation error.
+ *
+ *       404:
+ *         description: No books found.
+ */
 
 export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => idsQuerySchema.safeParse(query));
 
   if (!query.success) {
-    return {
-      statusCode: 400,
-      body: query.error.issues,
-    }
+    setResponseStatus(event, 400)
+    return query.error.issues
   }
 
   const user = event.context.user
   if (!user) {
     return {
       statusCode: 401,
-      body: 'unauthorized',
+      body: 'Unauthorized',
     }
   }
 
-  const pinIds = query.data.p.split(',').map(Number)
+  const pinIds = query.data.ids.split(',').map(Number)
 
   const books = await getBooksByPins(user.id, pinIds)
 
   if (!books.length) {
-    return {
-      statusCode: 404,
-      body: 'not found',
-    }
+    setResponseStatus(event, 404)
+    return { error: 'Books not found' }
   }
 
-  return {
-    statusCode: 200,
-    body: books,
-  }
+  return books
 })
 
 
