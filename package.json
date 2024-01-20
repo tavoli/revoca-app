@@ -7,12 +7,15 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "migrations:up": "bun run scripts/migrate.ts --up",
+    "migrations:down": "bun run scripts/migrate.ts --down"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.5",
     "@types/pg-pool": "^2.0.6",
     "@types/swagger-jsdoc": "^6.0.4",
+    "chalk": "^5.3.0",
     "nuxt": "^3.9.0",
     "vue": "^3.4.5",
     "vue-router": "^4.2.5"
