@@ -21,19 +21,25 @@ const sessionQuerySchema = z.object({
  *           schema:
  *             $ref: '#/components/schemas/Session'
  *
- *   responses:
- *     200:
- *       description: The session was successfully created
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Token'
- *
- *     400:
- *       description: The request was malformed
- *
- *     500:
- *       description: An internal server error occurred
+ *     responses:
+ *       '200':
+ *          description: The session was created successfully
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/Token'
+ *       '400':
+ *         description: The request body was invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
+ *       '500':
+ *         description: An internal server error occurred
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
  *
  * components:
  *  schemas:
@@ -48,9 +54,12 @@ const sessionQuerySchema = z.object({
  *          maxLength: 20
  *
  *    Token:
- *      type: string
- *      description: The JWT token
- *      example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+ *      type: object
+ *      properties:
+ *        token:
+ *          type: string
+ *          description: The token to use for authentication
+ *          example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
  */
 
 export default defineEventHandler(async (event) => {
@@ -82,6 +91,6 @@ export default defineEventHandler(async (event) => {
   } catch (error) {
     console.error(error);
     setResponseStatus(event, 500);
-    return 'Internal server error';
+    return { error: "An internal server error occurred" };
   }
 });

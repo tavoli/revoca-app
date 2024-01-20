@@ -29,19 +29,27 @@ const paginateQuerySchema = z.object({
  *         required: true
  *         description: The slug of the book
  *
- *   responses:
- *     '200':
- *       description: The sentences were successfully paginated
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Sentences'
+ *     responses:
+ *       '200':
+ *         description: The sentences were successfully paginated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Sentences'
  *
- *     '400':
- *       description: The request was malformed
- *       
- *     '404':
- *       description: The sentences were not found
+ *       '400':
+ *         description: The request was malformed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
+ *         
+ *       '404':
+ *         description: The sentences were not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFound'
  *
  * components:
  *   schemas:

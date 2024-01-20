@@ -44,6 +44,28 @@ const pinBodySchema = z.object({
  *     responses:
  *       '200':
  *         description: The pin was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ok'
+ *       '400':
+ *         description: The request body was invalid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Unauthorized'
+ *       '500':
+ *         description: An internal server error occurred
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
  */
 
 export default defineEventHandler(async (event) => {
@@ -79,7 +101,13 @@ export default defineEventHandler(async (event) => {
     created_at: (new Date()).toISOString()
   }
 
-  await insertPin(pin)
+  try {
+    await insertPin(pin)
+  } catch (e) {
+    console.log(e)
+    setResponseStatus(event, 500)
+    return {error: 'Internal Server Error'}
+  }
 
   return { ok: true }
 })

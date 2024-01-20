@@ -36,9 +36,24 @@ const paginateQuerySchema = z.object({
  *
  *       400:
  *         description: The request was malformed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
+ *
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Unauthorized'
  *
  *       404:
  *         description: The books were not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFound'
  *
  * components:
  *   schemas:

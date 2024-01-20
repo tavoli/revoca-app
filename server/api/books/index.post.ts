@@ -56,12 +56,30 @@ const bookBodySchema = z.object({
  *     responses:
  *       '200':
  *         description: The book was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Ok'
  *
  *       '400':
  *         description: The request was malformed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
  *
  *       '401':
  *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Unauthorized'
+ *       '500':
+ *         description: An internal server error occurred
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/InternalServerError'
  */
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, body => bookBodySchema.safeParse(body))

@@ -30,12 +30,24 @@ const idsQuerySchema = z.object({
  *
  *       401:
  *         description: Unauthorized.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Unauthorized'
  *
  *       400:
  *         description: Zod validation error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
  *
  *       404:
  *         description: No books found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFound'
  */
 
 export default defineEventHandler(async (event) => {
@@ -48,10 +60,8 @@ export default defineEventHandler(async (event) => {
 
   const user = event.context.user
   if (!user) {
-    return {
-      statusCode: 401,
-      body: 'Unauthorized',
-    }
+    setResponseStatus(event, 401)
+    return { error: 'Unauthorized' }
   }
 
   const pinIds = query.data.ids.split(',').map(Number)

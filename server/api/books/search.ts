@@ -29,9 +29,17 @@ const searchQuerySchema = z.object({
  *
  *       400:
  *         description: Invalid query.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationIssues'
  *
  *       404:
  *         description: No books found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/NotFound'
  *
  * components:
  *   schemas:
@@ -47,6 +55,11 @@ const searchQuerySchema = z.object({
  *           type: string
  *           description: The title of the book
  *           example: "Sample Title"
+ *         id:
+ *           type: number
+ *           description: The id of the book
+ *           example: 123
+ *
  */
 
 export default defineEventHandler(async (event) => {
