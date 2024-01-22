@@ -19,6 +19,7 @@
 
   const onSubmit = (e: Event) => {
     e.preventDefault();
+    
     if (!form.value.rawText) {
       form.value.errors.set('title', 'title is required');
     }
@@ -36,92 +37,92 @@
 
  <template>
   <form :v-on-submit="onSubmit">
-    <div>
-      <label for="title">title</label>
-      <input 
-        id="title" 
-        name="title" 
-        v-model="form.title"
-        type="text" 
-      />
-    </div>
-    <div>
-      <label for="drag">drag a file</label>
-      <input 
-        id="drag" 
-        name="file" 
-        @input="onFileChange"
-        type="file" 
-      />
-    </div>
-    <h1>or</h1>
-    <div>
-      <label for="raw">insert a text</label>
-      <textarea 
-        id="raw" 
-        v-model="form.rawText"
-        cols="30" 
-        rows="10">
-      </textarea>
-    </div>
-    <div>
-      <label for="image">image</label>
-      <input 
-        id="image" 
-        v-model="form.imageUrl"
-        type="text" 
-      />
-    </div>
-    <div class="errors">
-      <label class="error" for="raw">
-        {{form.errors.get('rawText')}}
-      </label>
-      <label class="error" for="image">
-        {{form.errors.get('imageUrl')}}
-      </label>
-    </div>
-    <button type="submit" @click="onSubmit">
-      submit
-    </button>
+    <section class="book-sentences">
+      <div class="control">
+        <label for="drag">drag a file</label>
+        <input 
+          id="drag" 
+          name="file" 
+          @input="onFileChange"
+          type="file" 
+        />
+      </div>
+      <h1>or</h1>
+      <div class="control textarea">
+        <label for="raw">insert a text</label>
+        <textarea 
+          id="raw" 
+          v-model="form.rawText">
+        </textarea>
+      </div>
+    </section>
+    <section class="book-props">
+      <div class="control">
+        <label for="title">title</label>
+        <input 
+          id="title" 
+          name="title" 
+          v-model="form.title"
+          type="text" 
+        />
+      </div>
+      <div class="control">
+        <label for="image">image</label>
+        <input 
+          id="image" 
+          v-model="form.imageUrl"
+          type="text" 
+        />
+      </div>
+      <button type="submit" @click="onSubmit" class="btn btn-primary">
+        submit
+      </button>
+    </section>
   </form>
 </template>
 
-<style scoped>
-  form {
-    margin: 0 auto;
-    width: 300px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+<style lang="postcss" scoped>
+ form {
+   @apply flex items-center justify-around;
+   @apply w-full;
+ }
+
+ section {
+   @apply flex flex-col items-start justify-start;
+   @apply space-y-4 h-full p-4;
+ }
+
+ .book-sentences {
+    @apply w-1/2 h-screen;
   }
 
-  label {
-    color: #fff;
-    font-size: 16px;
+ .book-props {
+    @apply w-1/3;
+    margin-bottom: auto;
   }
 
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+ .control {
+   @apply flex flex-col items-start justify-start w-full;
+   @apply space-y-2;
+ }
 
-  li {
-    margin-bottom: 10px;
-  
-    input {
-      border-bottom: 1px solid #fff;
-    }
-  }
+ .control.textarea {
+   flex: 1;
+ }
 
-  .errors {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .error {
-    color: red;
-    font-size: 12px;
-  }
+ label {
+   @apply text-2xl font-bold mb-4;
+ }
+
+ input, textarea {
+   @apply border border-gray-400 rounded p-2 w-full;
+ }
+
+ textarea {
+   @apply flex-grow;
+ }
+
+ .btn {
+   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+ }
 </style>

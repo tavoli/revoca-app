@@ -12,6 +12,9 @@
     "migrations:down": "bun run scripts/migrate.ts --down"
   },
   "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.11.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "@tailwindcss/typography": "^0.5.10",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/pg-pool": "^2.0.6",
     "@types/swagger-jsdoc": "^6.0.4",

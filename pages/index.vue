@@ -1,9 +1,9 @@
 <template>
   <main>
-    <h1>enter</h1>
-    <input type="text" placeholder="username" v-model="username" />
+    <h1>Log in</h1>
+    <input v-model="username" placeholder="username" feedback="submit" />
     <button @click="createUserSession">
-      submit
+      Submit
     </button>
   </main> 
 </template>
@@ -36,35 +36,21 @@
   })
 </script>
 
-<style>
+<style lang="pcss" scoped>
   main {
-    margin: 0 auto;
-    width: 300px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    @apply flex flex-col items-center justify-center h-screen;
+    @apply space-y-4 border w-1/2 p-4;
   }
+
   h1 {
-    color: #fff;
-    font-size: 24px;
+    @apply text-4xl font-bold mb-4;
   }
-  input {
-    width: 100%;
-    background-color: transparent;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    outline: none;
-  }
+
   button {
-    width: 100%;
-    padding: 5px;
-    background-color: green;
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 2px;
+    @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+  }
+
+  input {
+    @apply border border-gray-400 rounded p-2;
   }
 </style>
