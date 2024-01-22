@@ -1,5 +1,7 @@
 import {z} from 'zod'
 
+import {paginatePins} from '~/server/repositories/pin/pin.repository'
+
 const paginateQuerySchema = z.object({
   n: z.string().regex(/^\d+$/).optional().default('0'),
 })
@@ -96,23 +98,30 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => paginateQuerySchema.safeParse(query))
 
   if (!query.success) {
-    setResponseStatus(event, 400)
-    return query.error.issues
+    throw createError({
+      message: 'Invalid query',
+      data: query.error.issues,
+      statusCode: 400,
+    })
   }
 
   const nextCursor = +query.data.n
 
   const user = event.context.user
   if (!user) {
-    setResponseStatus(event, 401)
-    return { error: 'Unauthorized' }
+    throw createError({
+      message: 'Unauthorized',
+      statusCode: 401,
+    })
   }
 
-  const pins = await paginatePins(user.id, nextCursor)
+  const pins = await paginatePins(db, user.id, nextCursor)
 
   if (pins.length === 0) {
-    setResponseStatus(event, 404)
-    return { error: 'Not found' }
+    throw createError({
+      message: 'Not found',
+      statusCode: 404,
+    })
   }
 
   const lastPin = pins[pins.length - 1]

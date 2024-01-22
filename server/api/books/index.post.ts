@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+import {insertBook, insertBookPin} from '~/server/repositories/book/book.repository'
+import {insertSentences} from '~/server/repositories/sentence/sentences.repository'
+
 const bookBodySchema = z.object({
   title: z.string(),
   imageUrl: z.string(),
@@ -85,58 +88,69 @@ export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, body => bookBodySchema.safeParse(body))
 
   if (!result.success) {
-    setResponseStatus(event, 400)
-    return result.error.issues
+    throw createError({
+      message: 'Error creating book',
+      data: result.error.issues,
+      statusCode: 500,
+    })
   }
 
   const user = event.context.user
 
   if (!user) {
-    setResponseStatus(event, 401)
-    return { error: 'Unauthorized' }
+    throw createError({
+      message: 'Unauthorized',
+      statusCode: 401,
+    })
   }
 
   const body = result.data
 
-  try {
-    const book_id = await insertBook({
-      title: body.title,
-      slug: body.slug,
-      image_url: body.imageUrl,
-      user_id: user.id,
-    })
-
-    if (!book_id) {
-      setResponseStatus(event, 500)
-      return { error: 'Error creating book' }
-    }
-
-    const sentences = body.sentences.map((sentence: string) => ({
-      book_id,
-      sentence,
-    }))
-
-    await insertSentences(sentences)
-
-    if (body.pins) {
-      const pins = body.pins.ids.map((pin_id: number) => ({
-        book_id,
-        pin_id,
+  db.transaction().execute(async (trx) => {
+    try {
+      const book_id = await insertBook(trx, {
+        title: body.title,
+        slug: body.slug,
+        image_url: body.imageUrl,
         user_id: user.id,
+      })
+
+      if (!book_id) {
+        throw createError({
+          message: 'Error creating book',
+          statusCode: 500,
+        })
+      }
+
+      const sentences = body.sentences.map((sentence: string) => ({
+        book_id,
+        sentence,
       }))
 
-      await insertBookPin(pins)
-    }
+      await insertSentences(trx, sentences)
 
-    await kv.zadd(
-      'titles',
-      { member: body.title, score: book_id },
-    );
-  } catch (error) {
-    console.error(error)
-    setResponseStatus(event, 500)
-    return { error: 'Error creating book' }
-  }
+      if (body.pins) {
+        const pins = body.pins.ids.map((pin_id: number) => ({
+          book_id,
+          pin_id,
+          user_id: user.id,
+        }))
+
+        await insertBookPin(trx, pins)
+      }
+
+      await kv.zadd(
+        'titles',
+        { member: body.title, score: book_id },
+      );
+    } catch (error) {
+      console.error(error)
+      throw createError({
+        message: 'Error creating book',
+        statusCode: 500,
+      })
+    }
+  })
 
   return { ok: true }
 })

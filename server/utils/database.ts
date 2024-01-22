@@ -1,10 +1,16 @@
 import Pool from 'pg-pool'
 import { Kysely, PostgresDialect } from 'kysely'
 
+import {UsersTable} from '../repositories/user/user.table'
+import {BooksTable} from '../repositories/book/book.table'
+import {PinTable} from '../repositories/pin/pin.table'
+import {BooksPinsTable} from '../repositories/book/book.table'
+import {SentencesTable} from '../repositories/sentence/sentences.table'
+
 export interface Database {
   users: UsersTable,
   books: BooksTable,
-  book_sentences: BookSentencesTable,
+  sentences: SentencesTable,
   pins: PinTable,
   books_pins: BooksPinsTable,
 }

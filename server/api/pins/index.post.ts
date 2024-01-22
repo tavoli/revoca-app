@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import {insertPin} from '~/server/repositories/pin/pin.repository'
+
 const pinBodySchema = z.object({
   book_id: z.number().int().positive(),
   sentence_id: z.number().int().positive(),
@@ -72,16 +74,21 @@ export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) => pinBodySchema.safeParse(body))
 
   if (!result.success) {
-    setResponseStatus(event, 400)
-    return result.error.issues
+    throw createError({
+      message: 'Invalid body',
+      data: result.error.issues,
+      statusCode: 400,
+    })
   }
 
   const body = result.data
 
   const user = event.context.user
   if (!user) {
-    setResponseStatus(event, 401)
-    return { error: 'Unauthorized' }
+    throw createError({
+      message: 'Unauthorized',
+      statusCode: 401,
+    })
   }
 
   const meanings = await getMeanings(body.pin)
@@ -102,11 +109,13 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    await insertPin(pin)
+    await insertPin(db, pin)
   } catch (e) {
     console.log(e)
-    setResponseStatus(event, 500)
-    return {error: 'Internal Server Error'}
+    throw createError({
+      message: 'Error creating pin',
+      statusCode: 500,
+    })
   }
 
   return { ok: true }

@@ -1,40 +1,22 @@
-export async function insertBook(body: NewBook): Promise<Book['id']> {
+import {Kysely} from "kysely";
+
+import {NewBook, NewBookPin} from "./book.table";
+
+export async function insertBook(db: Kysely<Database>, body: NewBook) {
   return db.insertInto('books')
     .values(body)
     .returning('id')
-    .executeTakeFirst()
+    .executeTakeFirstOrThrow()
     .then((row: any) => row.id);
 }
 
-export async function insertBookPin(body: NewBookPin[]) {
+export async function insertBookPin(db: Kysely<Database>, body: NewBookPin[]) {
   return db.insertInto('books_pins')
     .values(body)
     .execute();
 }
 
-export async function insertSentences(body: NewSentences) {
-  return db.insertInto('book_sentences')
-    .values(body)
-    .execute();
-}
-
-export async function paginateSentences(slug: string, nextCursor?: number) {
-  let query =  db.selectFrom('book_sentences')
-    .select(['book_sentences.id', 'sentence', 'book_id'])
-    .innerJoin('books', 'book_sentences.book_id', 'books.id')
-    .where('books.slug', '=', slug)
-
-  if (nextCursor) {
-    query = query.where('book_sentences.id', '>', nextCursor)
-  }
-
-  return query
-    .orderBy('book_sentences.id', 'asc')
-    .limit(10)
-    .execute();
-}
-
-export async function paginateBooks(nextCursor: number = 0) {
+export async function paginateBooks(db: Kysely<Database>, nextCursor: number = 0) {
   return db.selectFrom('books')
     .select(['books.id', 'title', 'slug', 'image_url'])
     .where('books.id', '>', nextCursor)
@@ -43,7 +25,7 @@ export async function paginateBooks(nextCursor: number = 0) {
     .execute();
 }
 
-export async function getBooksByPins(userId: string, pinIds: number[]) {
+export async function getBooksByPins(db: Kysely<Database>, userId: string, pinIds: number[]) {
   return db.selectFrom('books as b')
     .select(['b.id', 'title', 'slug', 'image_url'])
     .distinct()

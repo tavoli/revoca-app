@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { paginateSentences } from '~/server/repositories/sentence/sentences.repository'
+
 const paginateQuerySchema = z.object({
   n: z.string().regex(/^\d+$/).optional().default('0'),
   s: z.string(),
@@ -78,16 +80,21 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => paginateQuerySchema.safeParse(query))
 
   if (!query.success) {
-    setResponseStatus(event, 400)
-    return query.error.issues
+    throw createError({
+      message: 'Invalid query',
+      data: query.error.issues,
+      statusCode: 400,
+    })
   }
 
   const slug = query.data.s
 
   const user = event.context.user
   if (!user) {
-    setResponseStatus(event, 401)
-    return { error: 'Unauthorized' }
+    throw createError({
+      message: 'Unauthorized',
+      statusCode: 401,
+    })
   }
 
   const cacheCursorK = `${user.username}:${slug}`
@@ -96,18 +103,24 @@ export default defineEventHandler(async (event) => {
     ? await kv.hget<number>(cacheCursorK, 'next_cursor') ?? undefined
     : +query.data.n
 
-  const sentences = await paginateSentences(slug, nextCursor)
+  const sentences = await paginateSentences(db, slug, nextCursor)
 
   if (sentences.length === 0 && nextCursor === undefined) {
-    setResponseStatus(event, 404)
-    return { error: 'SENTENCES_NOT_FOUND' }
+    throw createError({
+      message: 'Sentences not found',
+      statusCode: 404,
+    })
   } else if (sentences.length === 0 && Number(nextCursor) >= 0) {
     setHeader(event, 'X-Reached-End', 'true')
-    setResponseStatus(event, 404)
-    return { error: 'NO_MORE_SENTENCES_OR_INVALID_CURSOR' }
+    throw createError({
+      message: 'no more sentences or invalid cursor',
+      statusCode: 404,
+    })
   } else if (sentences.length === 0) {
-    setResponseStatus(event, 404)
-    return { error: 'SENTENCES_NOT_FOUND' }
+    throw createError({
+      message: 'Sentences not found',
+      statusCode: 404,
+    })
   }
 
   const lastSentence = sentences[sentences.length - 1]

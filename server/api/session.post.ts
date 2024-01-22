@@ -1,6 +1,8 @@
 import { nanoid } from "nanoid";
 import { z } from 'zod'
 
+import {getUserByUsername, insertUser} from "../repositories/user/user.repository";
+
 const sessionQuerySchema = z.object({
   username: z.string().min(3).max(20),
 })
@@ -66,8 +68,10 @@ export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) => sessionQuerySchema.safeParse(body))
 
   if (!result.success) {
-    setResponseStatus(event, 400);
-    return result.error.issues;
+    throw createError({
+      status: 400,
+      data: result.error.issues,
+    })
   }
 
   try {
@@ -76,21 +80,23 @@ export default defineEventHandler(async (event) => {
       username: result.data.username,
     };
 
-    const existingUser = await getUserByUsername(user.username);
+    const existingUser = await getUserByUsername(db, user.username);
 
     const tokenPayload = existingUser || user;
 
     const token = jwt.createToken(tokenPayload);
 
     if (!existingUser) {
-      await insertUser(user);
+      await insertUser(db, user);
     }
 
     setResponseStatus(event, 200);
     return { token };
   } catch (error) {
     console.error(error);
-    setResponseStatus(event, 500);
-    return { error: "An internal server error occurred" };
+    throw createError({
+      message: "Error creating session",
+      statusCode: 500,
+    });
   }
 });

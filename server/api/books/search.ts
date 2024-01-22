@@ -66,8 +66,11 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => searchQuerySchema.safeParse(query))
 
   if (!query.success) {
-    setResponseStatus(event, 400)
-    return query.error.issues
+    throw createError({
+      message: 'Invalid query',
+      data: query.error.issues,
+      statusCode: 400,
+    })
   }
 
   const nextCursor = +query.data.n
@@ -79,8 +82,10 @@ export default defineEventHandler(async (event) => {
   })
 
   if (items && items?.length === 0) {
-    setResponseStatus(event, 404)
-    return { error: 'Not found' }
+    throw createError({
+      message: 'Not found',
+      statusCode: 404,
+    })
   }
 
   const titles = items.reduce((acc: any, item: any, index: number) => {

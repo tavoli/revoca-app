@@ -1,5 +1,7 @@
 import {z} from 'zod'
 
+import {paginateBooks} from '~/server/repositories/book/book.repository'
+
 const paginateQuerySchema = z.object({
   n: z.string().optional().default('1'),
 })
@@ -17,11 +19,8 @@ const paginateQuerySchema = z.object({
  *         name: n
  *         schema:
  *           type: integer
- *           minimum: 1
  *           description: The next cursor
  *           example: 1
- *           required: false
- *           default: 1
  *
  *     responses:
  *       200:
@@ -73,19 +72,21 @@ export default defineEventHandler(async (event) => {
   const query = await getValidatedQuery(event, (query) => paginateQuerySchema.safeParse(query))
 
   if (!query.success) {
-    setResponseStatus(event, 400)
-    return query.error.issues
+    throw createError({
+      status: 400,
+      data: query.error.issues,
+    })
   }
 
   const nextCursor = +query.data.n
 
-  const books = await paginateBooks(nextCursor)
+  const books = await paginateBooks(db, nextCursor)
 
   if (books.length === 0) {
-    setResponseStatus(event, 404)
-    return {
-      error: 'Not Found',
-    }
+    throw createError({
+      status: 404,
+      data: 'Not Found',
+    })
   }
 
   const lastBook = books[books.length - 1]

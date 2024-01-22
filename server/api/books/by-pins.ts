@@ -1,4 +1,5 @@
 import {z} from 'zod'
+import {getBooksByPins} from '~/server/repositories/book/book.repository';
 
 const idsQuerySchema = z.object({
   ids: z.string().regex(/^\d+(,\d+)*$/),
@@ -66,7 +67,7 @@ export default defineEventHandler(async (event) => {
 
   const pinIds = query.data.ids.split(',').map(Number)
 
-  const books = await getBooksByPins(user.id, pinIds)
+  const books = await getBooksByPins(db, user.id, pinIds)
 
   if (!books.length) {
     setResponseStatus(event, 404)
