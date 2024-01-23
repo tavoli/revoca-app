@@ -52,6 +52,24 @@
 <template>
   <form :v-on-submit="onSubmit">
     <h1>step 2</h1>
+    <div class="flex flex-col items-start justify-start space-y-2">
+      <label for="title">title</label>
+      <input 
+        id="title" 
+        name="title" 
+        v-model="form.title"
+        type="text" 
+      />
+    </div>
+    <div class="flex flex-col items-start justify-start space-y-2">
+      <label class="text-2xl font-bold mb-4" for="image">image url</label>
+      <input 
+        id="image" 
+        class="border border-gray-400 rounded p-2 w-full"
+        v-model="form.imageUrl"
+        type="text" 
+      />
+    </div>
     <ul>
       <li v-for="(_, index) in sentences" :key="index">
         <input type="text" v-model="sentences[index]">

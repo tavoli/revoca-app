@@ -36,93 +36,22 @@
 </script>
 
  <template>
-  <form :v-on-submit="onSubmit">
-    <section class="book-sentences">
-      <div class="control">
-        <label for="drag">drag a file</label>
-        <input 
-          id="drag" 
-          name="file" 
-          @input="onFileChange"
-          type="file" 
-        />
+  <main class="w-7/12 mx-auto">
+    <header class="flex items-center justify-between w-full py-4">
+      <label class="text-md text-center" for="raw">
+         you are storing a new book
+      </label>
+      <div class="flex-1 flex items-center justify-end">
+        <button 
+          class="bg-blue-500 text-white font-bold py-2 px-4 rounded" 
+          type="submit" 
+          @click="onSubmit">
+          next
+        </button>
       </div>
-      <h1>or</h1>
-      <div class="control textarea">
-        <label for="raw">insert a text</label>
-        <textarea 
-          id="raw" 
-          v-model="form.rawText">
-        </textarea>
-      </div>
-    </section>
-    <section class="book-props">
-      <div class="control">
-        <label for="title">title</label>
-        <input 
-          id="title" 
-          name="title" 
-          v-model="form.title"
-          type="text" 
-        />
-      </div>
-      <div class="control">
-        <label for="image">image</label>
-        <input 
-          id="image" 
-          v-model="form.imageUrl"
-          type="text" 
-        />
-      </div>
-      <button type="submit" @click="onSubmit" class="btn btn-primary">
-        submit
-      </button>
-    </section>
-  </form>
+    </header>
+    <form class="w-10/12 mt-8 mx-auto">
+      <Editor v-model="form.rawText" />
+    </form>
+  </main>
 </template>
-
-<style lang="postcss" scoped>
- form {
-   @apply flex items-center justify-around;
-   @apply w-full;
- }
-
- section {
-   @apply flex flex-col items-start justify-start;
-   @apply space-y-4 h-full p-4;
- }
-
- .book-sentences {
-    @apply w-1/2 h-screen;
-  }
-
- .book-props {
-    @apply w-1/3;
-    margin-bottom: auto;
-  }
-
- .control {
-   @apply flex flex-col items-start justify-start w-full;
-   @apply space-y-2;
- }
-
- .control.textarea {
-   flex: 1;
- }
-
- label {
-   @apply text-2xl font-bold mb-4;
- }
-
- input, textarea {
-   @apply border border-gray-400 rounded p-2 w-full;
- }
-
- textarea {
-   @apply flex-grow;
- }
-
- .btn {
-   @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
- }
-</style>

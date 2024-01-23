@@ -11,8 +11,8 @@
 
   const step = useState("step", () => 1)
   useState<Form>("form", () => ({
-    title: 'put your title here',
-    rawText: 'put your text here',
+    title: 'title here',
+    rawText: 'title',
     imageUrl: 'put your image url here',
     errors: new Map<string, string>(),
   }))
