@@ -5,7 +5,7 @@ import {insertSentences} from '~/server/repositories/sentence/sentences.reposito
 
 const bookBodySchema = z.object({
   title: z.string(),
-  imageUrl: z.string(),
+  imageSrc: z.string(),
   sentences: z.array(z.string()),
   slug: z.string(),
   pins: z.object({
@@ -33,7 +33,7 @@ const bookBodySchema = z.object({
  *             properties:
  *               title:
  *                 type: string
- *               imageUrl:
+ *               imageSrc:
  *                 type: string
  *               sentences:
  *                 type: array
@@ -50,7 +50,7 @@ const bookBodySchema = z.object({
  *                       type: number
  *           example:
  *             title: "Sample Title"
- *             imageUrl: "https://example.com/image.jpg"
+ *             imageSrc: "https://example.com/image.jpg"
  *             sentences: ["Sentence 1", "Sentence 2"]
  *             slug: "sample-title"
  *             pins:
@@ -111,7 +111,7 @@ export default defineEventHandler(async (event) => {
       const book_id = await insertBook(trx, {
         title: body.title,
         slug: body.slug,
-        image_url: body.imageUrl,
+        image_url: body.imageSrc,
         user_id: user.id,
       })
 

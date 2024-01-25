@@ -1,27 +1,23 @@
 <script setup lang="tsx">
-  function randomPin() {
-    const list = ['mean', 'chain', 'sail', 'sugar', 'screw', 'sneeze', 'societ']
-    return list[Math.floor(Math.random() * list.length)]
-  }
+import Controller from "~/utils/controller";
+import List from "./List.vue"
 
-  const query = useRequestURL()
-  onMounted(() => {
-    $fetch(`/api/sentences/paginate?s=${query.pathname.split('/')[2]}`)
+const query = useRequestURL()
 
-    $fetch('/api/pins', {
-      method: 'POST',
-      body: { 
-        book_id: 21,
-        sentence_id: 10,
-        pin: randomPin(),
-      },
-    })
+const slug = query.pathname.split('/')[2]
+const sentence = new Controller(slug)
 
-    $fetch(`/api/pins/paginate?n=0`)
-    $fetch('/api/books/by-pins?p=1,2,3')
-  })
+const getInitialData = async () => {
+  const data = await sentence.getInitialData(30)
+  return data
+}
 
+const nextData = async () => {
+  const data = await sentence.getNextData(10)
+  return data
+}
 </script>
 
 <template>
+  <List :initialData="getInitialData" :nextData="nextData" />
 </template>

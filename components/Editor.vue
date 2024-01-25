@@ -1,7 +1,3 @@
-<template>
-  <editor-content :editor="editor" />
-</template>
-
 <script setup lang="tsx">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import Document from '@tiptap/extension-document'
@@ -12,17 +8,10 @@ import FileHandler from '@tiptap-pro/extension-file-handler'
 import Image from '@tiptap/extension-image'
 import DropCursor from '@tiptap/extension-dropcursor'
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: '',
-  },
-})
-
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['change'])
 
 const editor = useEditor({
-  content: props.modelValue,
+  content: '',
   extensions: [
     Document,
     Heading.configure({
@@ -48,11 +37,11 @@ const editor = useEditor({
     })
   ],
   onUpdate(update) {
-    emit('update:modelValue', update.editor.getHTML())
+    emit('change', update.editor.getJSON())
   },
   editorProps: {
     attributes: {
-      class: 'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none h-64',
+      class: 'mx-auto focus:outline-none h-64 text-gray-300',
     },
   },
 }) as any
@@ -69,24 +58,24 @@ function handleFilePaste(file: File, editor: any, pos: number) {
       const reader = new FileReader()
       reader.readAsDataURL(file)
       reader.onload = () => {
-        editor.chain().focus().setImage({ src: reader.result }).run()
         editor.chain().insertContentAt(pos, {
           type: 'image',
           attrs: {
             src: reader.result,
           },
-        }).focus().run()
+        })
       }
       break
     case 'text/plain':
       const reader2 = new FileReader()
       reader2.readAsText(file)
       reader2.onload = () => {
-        editor.chain().focus().insertContentAt(pos, {
+        editor.chain().insertContentAt(pos, {
           type: 'text',
           text: reader2.result,
-        }).run()
+        })
       }
+      break
     case 'application/pdf':
       // TODO: handle pdf
       break
@@ -95,3 +84,10 @@ function handleFilePaste(file: File, editor: any, pos: number) {
   }
 }
 </script>
+
+<template>
+  <p class="bg-gray-700 text-gray-500 pl-2 py-2 mb-6 rounded-md">
+    drag a image cover
+  </p>
+  <editor-content :editor="editor" />
+</template>

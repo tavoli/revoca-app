@@ -6,6 +6,7 @@ const privateRoutes = [
   '/api/pins',
   '/api/pins/paginate',
   '/api/sentences/paginate',
+  '/api/sentences/initial',
 ]
 
 /**

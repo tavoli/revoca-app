@@ -1,31 +1,25 @@
 import { z } from 'zod'
 
-import { paginateSentences } from '~/server/repositories/sentence/sentences.repository'
+import { getAllInitialSentences } from '~/server/repositories/sentence/sentences.repository'
 
 const numberRegex = /^\d+$/
 const paginateQuerySchema = z.object({
   l: z.string().regex(numberRegex).optional().default('10'),
-  n: z.string().regex(numberRegex).optional(),
   s: z.string(),
 })
 
 /**
  * @openapi
  *
- * /sentences/paginate:
+ * /sentences/initial:
  *   get:
  *     security:
  *       - HeaderAuth: []
  *
- *     summary: Paginate sentences
- *     description: Paginate sentences
+ *     summary: Initial sentences
+ *     description: Load initial sentences
  *
  *     parameters:
- *       - in: query
- *         name: n
- *         schema:
- *           type: string
- *         description: The next cursor
  *       - in: query
  *         name: s
  *         schema:
@@ -37,12 +31,12 @@ const paginateQuerySchema = z.object({
  *         schema:
  *           type: string
  *         description: The limit of sentences
- *         default: 10
- *         example: 10
+ *         default: 30
+ *         example: 30
  *
  *     responses:
  *       '200':
- *         description: The sentences were successfully paginated
+ *         description: The sentences were successfully loaded
  *         content:
  *           application/json:
  *             schema:
@@ -108,26 +102,13 @@ export default defineEventHandler(async (event) => {
 
   const cacheCursorK = `${user.username}:${slug}`
 
-  const nextCursor = query.data.n === undefined
-    ? await kv.hget<number>(cacheCursorK, 'next_cursor') ?? undefined
-    : +query.data.n
+  const nextCursor = await kv.hget<number>(cacheCursorK, 'next_cursor')
 
   const limit = +query.data.l
 
-  const sentences = await paginateSentences(db, slug, limit, nextCursor)
+  const sentences = await getAllInitialSentences(db, slug, limit, nextCursor)
 
-  if (sentences.length === 0 && nextCursor === undefined) {
-    throw createError({
-      message: 'Sentences not found',
-      statusCode: 404,
-    })
-  } else if (sentences.length === 0 && Number(nextCursor) >= 0) {
-    setHeader(event, 'X-Reached-End', 'true')
-    throw createError({
-      message: 'no more sentences or invalid cursor',
-      statusCode: 404,
-    })
-  } else if (sentences.length === 0) {
+  if (sentences.length === 0) {
     throw createError({
       message: 'Sentences not found',
       statusCode: 404,
