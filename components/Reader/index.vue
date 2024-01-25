@@ -23,7 +23,7 @@ const isTarget = (id: string) => {
 
   const targetIndex = totalNodes - 2
   const targetNode = editor.value?.state.doc.child(targetIndex)
-  const targetId = targetNode?.textContent?.match(/{{(.*)}}/)?.[1] ?? ''
+  const targetId = targetNode?.attrs.meta?.id
 
   return id === targetId
 }
