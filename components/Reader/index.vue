@@ -41,13 +41,30 @@ const restoreScrollPosition = () => {
 }
 
 const CustomParagraph = Paragraph.extend({
+  addAttributes() {
+    return {
+      meta: {
+        default: null,
+        parseHTML: (element) => {
+          return {
+            id: element.getAttribute('id'),
+          }
+        },
+        renderHTML: (attributes) => {
+          if (!attributes.id) return {}
+          return {
+            id: attributes.id,
+          }
+        },
+      },
+    }
+  },
   addNodeView() {
-    return ({ node }) => {
+    return ({ node, extension }) => {
       const dom = document.createElement('p')
-      const id = node.textContent?.match(/{{(.*)}}/)?.[1] ?? ''
-      const text = node.textContent?.match(/}}(.*)/)?.[1] ?? ''
-      dom.textContent = text
-      dom.setAttribute('id', id)
+      dom.textContent = node.textContent
+      dom.setAttribute('id', node.attrs.meta?.id)
+      dom.setAttribute('class', extension.options.HTMLAttributes.class)
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -73,7 +90,11 @@ const editor = useEditor({
   content: props.html,
   extensions: [
     Heading,
-    CustomParagraph,
+    CustomParagraph.configure({
+      HTMLAttributes: {
+        class: 'py-4',
+      },
+    }),
     Document,
     Image,
     Text,
@@ -81,7 +102,7 @@ const editor = useEditor({
   editable: false,
   editorProps: {
     attributes: {
-      class: 'text-gray-300 prose xl:prose-xl',
+      class: 'text-gray-300 text-lg font-bookerly',
     },
   },
   onTransaction() {
@@ -95,5 +116,8 @@ watch(() => props.html, (value) => {
 </script>
 
 <template>
+  <Head>
+    <link rel="stylesheet" href="/font/bookerly.css" />
+  </Head>
   <editor-content :editor="editor" />
 </template>
