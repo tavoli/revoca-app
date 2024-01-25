@@ -12,6 +12,7 @@
     "migrations:down": "bun run scripts/migrate.ts --down"
   },
   "devDependencies": {
+    "@nuxt/devtools": "latest",
     "@nuxtjs/tailwindcss": "^6.11.0",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10",
@@ -19,8 +20,8 @@
     "@types/pg-pool": "^2.0.6",
     "@types/swagger-jsdoc": "^6.0.4",
     "chalk": "^5.3.0",
-    "nuxt": "^3.9.0",
-    "vue": "^3.4.5",
+    "nuxt": "latest",
+    "vue": "latest",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "nanoid": "^5.0.4",
     "pg-pool": "^3.6.1",
     "swagger-jsdoc": "latest",
+    "vue-virtual-scroller": "next",
     "zod": "^3.22.4"
   }
 }
