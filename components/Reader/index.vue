@@ -102,7 +102,7 @@ const editor = useEditor({
   editable: false,
   editorProps: {
     attributes: {
-      class: 'text-gray-300 text-lg font-bookerly',
+      class: 'text-gray-300 text-lg text-justify font-bookerly',
     },
   },
   onTransaction() {
