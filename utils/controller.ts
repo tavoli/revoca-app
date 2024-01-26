@@ -1,5 +1,6 @@
 export default class Controller {
-  baseApi = '/api/sentences'
+  sentencesApi = '/api/sentences'
+  static booksApi = '/api/books'
   slug = ''
 
   constructor(slug: string) {
@@ -11,7 +12,7 @@ export default class Controller {
       s: this.slug,
       l: limit.toString(),
     })
-    const response = await fetch(`${this.baseApi}/${path}?${qs}`, {
+    const response = await fetch(`${this.sentencesApi}/${path}?${qs}`, {
       method: 'GET',
       headers: {
         'Authorization': `${localStorage.getItem('token')}`
@@ -27,5 +28,16 @@ export default class Controller {
 
   async getNextData(limit = 10) {
     return this.fetchData('paginate', limit)
+  }
+
+  static async paginateBooks() {
+    const response = await fetch(`${this.booksApi}/paginate`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    })
+    const data = await response.json()
+    return data
   }
 }

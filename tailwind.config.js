@@ -12,6 +12,7 @@ module.exports = {
     extend: {
       fontFamily: {
         bookerly: ['Bookerly', 'serif'],
+        sans: ['Poppins', 'sans-serif'],
       },
     },
   },

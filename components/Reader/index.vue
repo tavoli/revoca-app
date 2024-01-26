@@ -35,9 +35,9 @@ const saveScrollPosition = () => {
 }
 
 const restoreScrollPosition = () => {
-  const scrollPosition = localStorage.getItem('scrollPosition')
-  if (scrollPosition === null) return
-  window.scrollTo(0, parseInt(scrollPosition))
+  const scrollPosition = localStorage.getItem('scrollPosition');
+  if (scrollPosition === null) return;
+  document.documentElement.scrollTop = parseInt(scrollPosition);
 }
 
 const CustomParagraph = Paragraph.extend({

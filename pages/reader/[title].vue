@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import Controller from "~/utils/controller";
-import List from "./List.vue"
+import ReaderController from "./ReaderController.vue"
+import TopMenu from "./TopMenu.vue"
 
 const query = useRequestURL()
 
@@ -19,5 +20,9 @@ const nextData = async () => {
 </script>
 
 <template>
-  <List :initialData="getInitialData" :nextData="nextData" />
+  <TopMenu />
+  <ReaderController 
+    :initialData="getInitialData" 
+    :nextData="nextData" 
+  />
 </template>

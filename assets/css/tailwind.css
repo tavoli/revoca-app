@@ -5,3 +5,21 @@
 .mode-dark {
   @apply bg-slate-950;
 }
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md text-gray-200 font-semibold;
+  }
+
+  .btn-primary {
+    @apply bg-blue-500 hover:bg-blue-600;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-500 hover:bg-gray-600;
+  }
+
+  .btn-tertiary {
+    @apply bg-green-500 hover:bg-green-600;
+  }
+}

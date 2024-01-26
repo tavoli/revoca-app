@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "title": "The Hobbit",
+    "slug": "the-hobbit",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/91bqXw6kF2L.jpg"
+  },
+  {
+    "id": 2,
+    "title": "To Kill a Mockingbird",
+    "slug": "to-kill-a-mockingbird",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/91AQs6qvLqL.jpg"
+  },
+  {
+    "id": 3,
+    "title": "1984",
+    "slug": "1984",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81l3rZK4lnL.jpg"
+  },
+  {
+    "id": 4,
+    "title": "The Great Gatsby",
+    "slug": "the-great-gatsby",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/91w5XBPb3VL.jpg"
+  },
+  {
+    "id": 5,
+    "title": "Harry Potter and the Sorcerer's Stone",
+    "slug": "harry-potter-and-the-sorcerers-stone",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/91iXLw8dXnL.jpg"
+  },
+  {
+    "id": 6,
+    "title": "The Catcher in the Rye",
+    "slug": "the-catcher-in-the-rye",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/61Yb5kwYgHL.jpg"
+  },
+  {
+    "id": 7,
+    "title": "Lord of the Flies",
+    "slug": "lord-of-the-flies",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/51w4+H75l+L.jpg"
+  },
+  {
+    "id": 8,
+    "title": "Pride and Prejudice",
+    "slug": "pride-and-prejudice",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81QopLxKofL.jpg"
+  },
+  {
+    "id": 9,
+    "title": "The Chronicles of Narnia",
+    "slug": "the-chronicles-of-narnia",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81bXsEZJ6QL.jpg"
+  },
+  {
+    "id": 10,
+    "title": "The Shining",
+    "slug": "the-shining",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81p5IPEhZ4L.jpg"
+  },
+  {
+    "id": 11,
+    "title": "The Alchemist",
+    "slug": "the-alchemist",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81Yz9LG66vL.jpg"
+  },
+  {
+    "id": 12,
+    "title": "Moby-Dick",
+    "slug": "moby-dick",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/51JjKAMszxL.jpg"
+  },
+  {
+    "id": 13,
+    "title": "Frankenstein",
+    "slug": "frankenstein",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/71XJ0TO9v-L.jpg"
+  },
+  {
+    "id": 14,
+    "title": "The Odyssey",
+    "slug": "the-odyssey",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/71xjGdqcrFL.jpg"
+  },
+  {
+    "id": 15,
+    "title": "Brave New World",
+    "slug": "brave-new-world",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81RC4L77P9L.jpg"
+  },
+  {
+    "id": 16,
+    "title": "Dracula",
+    "slug": "dracula",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81v-ITWU6JL.jpg"
+  },
+  {
+    "id": 17,
+    "title": "The Old Man and the Sea",
+    "slug": "the-old-man-and-the-sea",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/71gNCAK6EjL.jpg"
+  },
+  {
+    "id": 18,
+    "title": "The Grapes of Wrath",
+    "slug": "the-grapes-of-wrath",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/61AP2Z92Y4L.jpg"
+  },
+  {
+    "id": 19,
+    "title": "Wuthering Heights",
+    "slug": "wuthering-heights",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/81bhyXJ6XWL.jpg"
+  },
+  {
+    "id": 20,
+    "title": "The War of the Worlds",
+    "slug": "the-war-of-the-worlds",
+    "image_url": "https://images-na.ssl-images-amazon.com/images/I/61m9SH7CEdL.jpg"
+  }
+]
