@@ -25,6 +25,7 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@floating-ui/vue": "^1.0.6",
     "@tiptap-pro/extension-file-handler": "^2.6.3",
     "@tiptap/extension-document": "^2.1.16",
     "@tiptap/extension-dropcursor": "^2.1.16",
@@ -32,7 +33,7 @@
     "@tiptap/extension-image": "^2.1.16",
     "@tiptap/extension-paragraph": "^2.1.16",
     "@tiptap/extension-text": "^2.1.16",
-    "@tiptap/pm": "^2.1.16",
+    "@tiptap/pm": "^2.2.0",
     "@tiptap/vue-3": "^2.1.16",
     "@vercel/kv": "^1.0.1",
     "jsonwebtoken": "^9.0.2",

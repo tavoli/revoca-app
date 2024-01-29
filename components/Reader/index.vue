@@ -6,6 +6,9 @@ import Heading from '@tiptap/extension-heading'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import Image from '@tiptap/extension-image'
+import {extendParagraph} from './extendParagraph'
+import {setEditorContent} from './utils'
+import {SelectionPopup} from './selectionPopup'
 
 interface Props {
   html: Content
@@ -17,72 +20,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['bottom'])
 
-const isTarget = (id: string) => {
-  const totalNodes = editor.value?.state.doc.childCount ?? 0
-  if (totalNodes < 10) return false
-
-  const targetIndex = totalNodes - 2
-  const targetNode = editor.value?.state.doc.child(targetIndex)
-  const targetId = targetNode?.attrs.meta?.id
-
-  return id === targetId
-}
-
-const saveScrollPosition = () => {
-  const scrollPosition = window.scrollY
-  if (scrollPosition === 0) return
-  localStorage.setItem('scrollPosition', scrollPosition.toString())
-}
-
-const restoreScrollPosition = () => {
-  const scrollPosition = localStorage.getItem('scrollPosition');
-  if (scrollPosition === null) return;
-  document.documentElement.scrollTop = parseInt(scrollPosition);
-}
-
-const CustomParagraph = Paragraph.extend({
-  addAttributes() {
-    return {
-      meta: {
-        default: null,
-        parseHTML: (element) => {
-          return {
-            id: element.getAttribute('id'),
-          }
-        },
-        renderHTML: (attributes) => {
-          if (!attributes.id) return {}
-          return {
-            id: attributes.id,
-          }
-        },
-      },
-    }
-  },
-  addNodeView() {
-    return ({ node, extension }) => {
-      const dom = document.createElement('p')
-      dom.textContent = node.textContent
-      dom.setAttribute('id', node.attrs.meta?.id)
-      dom.setAttribute('class', extension.options.HTMLAttributes.class)
-
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            saveScrollPosition()
-            if (isTarget(dom.id)) {
-              emit('bottom')
-            }
-          }
-        })
-      })
-
-      observer.observe(dom)
-
-      return {
-        dom,
-      }
-    }
+const CustomParagraph = extendParagraph(Paragraph, {
+  onIntersecting() {
+    emit('bottom')
   },
 })
 
@@ -98,6 +38,7 @@ const editor = useEditor({
     Document,
     Image,
     Text,
+    SelectionPopup
   ],
   editable: false,
   editorProps: {
@@ -105,13 +46,10 @@ const editor = useEditor({
       class: 'text-gray-300 text-lg text-justify font-bookerly',
     },
   },
-  onTransaction() {
-    restoreScrollPosition()
-  },
 })
 
 watch(() => props.html, (value) => {
-  editor.value?.chain().setContent(value).run()
+  setEditorContent(editor, value)
 })
 </script>
 
