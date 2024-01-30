@@ -2,9 +2,11 @@ export default class Controller {
   sentencesApi = '/api/sentences'
   static booksApi = '/api/books'
   slug = ''
+  bookId: number | null
 
   constructor(slug: string) {
     this.slug = slug
+    this.bookId = null
   }
 
   async fetchData(path: string, limit: number) {
@@ -19,6 +21,11 @@ export default class Controller {
       }
     })
     const data = await response.json()
+    const headers = response.headers
+    const bookId = headers.get('x-book-id')
+    if (bookId) {
+      this.bookId = +bookId
+    }
     return data
   }
 

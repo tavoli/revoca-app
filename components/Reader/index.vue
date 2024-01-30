@@ -2,17 +2,19 @@
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import { type Content } from "@tiptap/core"
 import Document from '@tiptap/extension-document'
+import Bold from '@tiptap/extension-bold'
 import Heading from '@tiptap/extension-heading'
 import Paragraph from '@tiptap/extension-paragraph'
 import Text from '@tiptap/extension-text'
 import Image from '@tiptap/extension-image'
 import {extendParagraph} from './extendParagraph'
-import {setEditorContent} from './utils'
-import {SelectionPopup} from './selectionPopup'
+import Popup from './Popup'
 
 interface Props {
   html: Content
 }
+
+const plugins = [`<popup />`]
 
 const props = withDefaults(defineProps<Props>(), {
   html: '',
@@ -27,7 +29,7 @@ const CustomParagraph = extendParagraph(Paragraph, {
 })
 
 const editor = useEditor({
-  content: props.html,
+  content: props.html?.concat(...plugins),
   extensions: [
     Heading,
     CustomParagraph.configure({
@@ -38,7 +40,12 @@ const editor = useEditor({
     Document,
     Image,
     Text,
-    SelectionPopup
+    Bold.configure({
+      HTMLAttributes: {
+        class: 'font-bold bg-green-600 rounded-md',
+      },
+    }),
+    Popup,
   ],
   editable: false,
   editorProps: {
@@ -49,7 +56,8 @@ const editor = useEditor({
 })
 
 watch(() => props.html, (value) => {
-  setEditorContent(editor, value)
+  const content = value?.concat(...plugins)
+  editor.value?.commands.setContent(content)
 })
 </script>
 

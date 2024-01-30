@@ -27,6 +27,7 @@
   "dependencies": {
     "@floating-ui/vue": "^1.0.6",
     "@tiptap-pro/extension-file-handler": "^2.6.3",
+    "@tiptap/extension-bold": "^2.2.0",
     "@tiptap/extension-document": "^2.1.16",
     "@tiptap/extension-dropcursor": "^2.1.16",
     "@tiptap/extension-heading": "^2.1.16",

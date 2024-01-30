@@ -17,5 +17,5 @@ export const setEditorContent = (
   editor: ShallowRef<Editor | undefined>,
   content: Content
 ) => {
-  editor.value?.chain().setContent(content).run()
+  editor.value?.chain().insertContent(content).focus().run()
 }
