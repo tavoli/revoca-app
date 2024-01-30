@@ -1,6 +1,10 @@
+import type {PostPin} from "./types"
+
 export default class Controller {
   sentencesApi = '/api/sentences'
   static booksApi = '/api/books'
+  static pinsApi = '/api/pins'
+
   slug = ''
   bookId: number | null
 
@@ -39,6 +43,34 @@ export default class Controller {
 
   static async paginateBooks() {
     const response = await fetch(`${this.booksApi}/paginate`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`
+      }
+    })
+    const data = await response.json()
+    return data
+  }
+
+  static async postPin(data: PostPin) {
+    const response = await fetch(`${this.pinsApi}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    const responseData = await response.json()
+    return responseData
+  }
+
+  static async paginatePins(limit = 10) {
+    const qs = new URLSearchParams({
+      l: limit.toString(),
+    })
+
+    const response = await fetch(`${this.pinsApi}/paginate?${qs}`, {
       method: 'GET',
       headers: {
         'Authorization': `${localStorage.getItem('token')}`

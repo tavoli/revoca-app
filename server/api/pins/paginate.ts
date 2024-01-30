@@ -4,6 +4,7 @@ import {paginatePins} from '~/server/repositories/pin/pin.repository'
 
 const paginateQuerySchema = z.object({
   n: z.string().regex(/^\d+$/).optional().default('0'),
+  l: z.string().regex(/^\d+$/).optional().default('10'),
 })
 
 /**
@@ -19,6 +20,7 @@ const paginateQuerySchema = z.object({
  *
  *     parameters:
  *       - in: query
+ *         description: The next cursor
  *         name: n
  *         schema:
  *           type: integer
@@ -27,6 +29,18 @@ const paginateQuerySchema = z.object({
  *           example: 1
  *           required: false
  *           default: 1
+ *
+ *       - in: query
+ *         description: The limit
+ *         name: l
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           description: The limit
+ *           example: 10
+ *           required: false
+ *           default: 10
  *
  *     responses:
  *       200:
@@ -106,6 +120,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const nextCursor = +query.data.n
+  const limit = +query.data.l
 
   const user = event.context.user
   if (!user) {
@@ -115,7 +130,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const pins = await paginatePins(db, user.id, nextCursor)
+  const pins = await paginatePins(db, user.id, nextCursor, limit)
 
   if (pins.length === 0) {
     throw createError({

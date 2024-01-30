@@ -18,8 +18,14 @@ props.editor.on('selectionUpdate', ({ editor }) => {
   const { selection } = editor.state
 
   const isParagraph = editor.state.selection.$from.parent.type.name === 'paragraph'
+  const isSelection = selection.from !== selection.to
 
-  if (!isParagraph) {
+  if (isParagraph && !isSelection) {
+    hidden.value = true
+    return
+  }
+
+  if (!isParagraph || !isSelection) {
     return
   }
 

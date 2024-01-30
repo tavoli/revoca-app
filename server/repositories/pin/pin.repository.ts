@@ -8,11 +8,16 @@ export function insertPin(db: Kysely<Database>, body: NewPin) {
     .execute();
 }
 
-export function paginatePins(db: Kysely<Database>, userId: string, nextCursor: number = 0) {
+export function paginatePins(
+  db: Kysely<Database>,
+  userId: string,
+  nextCursor: number = 0,
+  limit: number = 10
+) {
   return db.selectFrom('pins')
     .select(['id', 'pin', 'synonyms', 'definitions', 'parts_of_speech'])
     .where('id', '>', nextCursor)
     .where('user_id', '=', userId)
-    .limit(10)
+    .limit(limit)
     .execute();
 }

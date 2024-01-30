@@ -1,6 +1,5 @@
 <script setup lang="tsx">
 import { useEditor, EditorContent } from '@tiptap/vue-3'
-import { type Content } from "@tiptap/core"
 import Document from '@tiptap/extension-document'
 import Bold from '@tiptap/extension-bold'
 import Heading from '@tiptap/extension-heading'
@@ -9,27 +8,37 @@ import Text from '@tiptap/extension-text'
 import Image from '@tiptap/extension-image'
 import {extendParagraph} from './extendParagraph'
 import Popup from './Popup'
+import type {Pin, Sentence} from '~/utils/types'
 
 interface Props {
-  html: Content
+  getInitialData: () => Promise<Sentence[]>
+  getNextData: () => Promise<Sentence[]>
+  getPins: () => Promise<Pin[]>
 }
 
 const plugins = [`<popup />`]
 
+const pins = useState<Pin[]>('pins', () => [])
+
 const props = withDefaults(defineProps<Props>(), {
-  html: '',
+  initialHtml: '',
+  getNextData: () => Promise.resolve([]),
+  getPins: () => Promise.resolve([]),
 })
 
-const emit = defineEmits(['bottom'])
-
 const CustomParagraph = extendParagraph(Paragraph, {
-  onIntersecting() {
-    emit('bottom')
+  async onIntersecting() {
+    const nextJson = await props.getNextData()
+    const nextHtml = normalize(nextJson, pins.value)
+    editor.value?.commands.insertContentAt(
+      editor.value?.state.doc.content.size,
+      nextHtml,
+    )
   },
 })
 
 const editor = useEditor({
-  content: props.html?.concat(...plugins),
+  content: '',
   extensions: [
     Heading,
     CustomParagraph.configure({
@@ -55,8 +64,13 @@ const editor = useEditor({
   },
 })
 
-watch(() => props.html, (value) => {
-  const content = value?.concat(...plugins)
+onMounted(async () => {
+  const initialData = await props.getInitialData()
+  pins.value = await props.getPins()
+
+  const initialHtml = normalize(initialData, pins.value)
+  const content = initialHtml.concat(...plugins)
+
   editor.value?.commands.setContent(content)
 })
 </script>
