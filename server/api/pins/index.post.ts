@@ -91,7 +91,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const meanings = await getMeanings(body.pin)
+  const meanings = await dictionary(body.pin)
   const partsOfSpeech = meanings.partsOfSpeech.join('\n')
   const definitions = meanings.definitions.join('\n')
   const synonyms = meanings.synonyms.join('\n')
@@ -120,38 +120,3 @@ export default defineEventHandler(async (event) => {
 
   return { ok: true }
 })
-
-async function getMeanings(pin: string) {
-  const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${pin}`)
-  const json = await response.json()
-
-  const definitions: string[] = []
-  const synonyms: string[] = []
-  const partsOfSpeech: string[] = []
-
-  if (json.title === 'No Definitions Found') {
-    return {
-      definitions,
-      synonyms,
-      partsOfSpeech
-    }
-  }
-
-  for (const result of json) {
-    for (const meaning of result.meanings) {
-      partsOfSpeech.push(meaning.partOfSpeech)
-      for (const definition of meaning.definitions) {
-        definitions.push(definition.definition)
-      }
-      for (const synonym of meaning.synonyms) {
-        synonyms.push(synonym)
-      }
-    }
-  }
-
-  return {
-    definitions,
-    synonyms,
-    partsOfSpeech
-  }
-}

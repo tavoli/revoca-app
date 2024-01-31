@@ -11,6 +11,22 @@
     @apply px-4 py-2 rounded-md text-gray-200 font-semibold;
   }
 
+  .btn-xs {
+    @apply text-xs;
+  }
+
+  .btn-sm {
+    @apply text-sm;
+  }
+
+  .btn-md {
+    @apply text-md;
+  }
+
+  .btn-lg {
+    @apply text-lg;
+  }
+
   .btn-primary {
     @apply bg-blue-500 hover:bg-blue-600;
   }
@@ -21,5 +37,21 @@
 
   .btn-tertiary {
     @apply bg-green-500 hover:bg-green-600;
+  }
+
+  .overflow-pretty {
+    @apply overflow-auto;
+
+    &::-webkit-scrollbar {
+      @apply w-2;
+    }
+
+    &::-webkit-scrollbar-track {
+      @apply bg-slate-900;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      @apply bg-slate-800;
+    }
   }
 }

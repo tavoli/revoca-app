@@ -65,12 +65,17 @@ onUnmounted(() => {
 
 <template>
   <node-view-wrapper>
-    <div ref="popop" :class="{ hidden }" :style="style" class="popop-container absolute z-10 top-0 left-0">
+    <div ref="popop" 
+      :class="{ hidden }"
+      :style="style" 
+      class="popop-container absolute z-10 top-0 left-0 font-sans">
+
       <div class="popop absolute">
-        <div ref="content" class="popop-content w-64 h-32 bg-white p-2 rounded shadow-md overflow-auto">
+        <div ref="content" class="popop-content w-96 h-48 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
           <Pin :editor="props.editor" />
         </div>
       </div>
+
     </div>
   </node-view-wrapper>
 </template>

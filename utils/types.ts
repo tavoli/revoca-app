@@ -16,10 +16,10 @@ export interface Sentence {
   sentence: string
 }
 
-export interface Pin {
+export interface PinDefinition {
   id: number
   pin: string
   synonyms: string[]
   definitions: string[]
-  parts_of_speech: string[]
+  partsOfSpeech: string[]
 }

@@ -1,9 +1,10 @@
-import type {PostPin} from "./types"
+import type {PinDefinition, PostPin} from "./types"
 
 export default class Controller {
   sentencesApi = '/api/sentences'
   static booksApi = '/api/books'
   static pinsApi = '/api/pins'
+  static definitionApi = '/api/definition'
 
   slug = ''
   bookId: number | null
@@ -76,6 +77,15 @@ export default class Controller {
         'Authorization': `${localStorage.getItem('token')}`
       }
     })
+    const data = await response.json()
+    return data
+  }
+
+  static async getDefinition(pin: string): Promise<PinDefinition> {
+    const qs = new URLSearchParams({
+      pin: pin,
+    })
+    const response = await fetch(`${this.definitionApi}?${qs}`)
     const data = await response.json()
     return data
   }

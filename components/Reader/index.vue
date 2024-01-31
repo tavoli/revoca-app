@@ -8,17 +8,17 @@ import Text from '@tiptap/extension-text'
 import Image from '@tiptap/extension-image'
 import {extendParagraph} from './extendParagraph'
 import Popup from './Popup'
-import type {Pin, Sentence} from '~/utils/types'
+import type {PinDefinition, Sentence} from '~/utils/types'
 
 interface Props {
   getInitialData: () => Promise<Sentence[]>
   getNextData: () => Promise<Sentence[]>
-  getPins: () => Promise<Pin[]>
+  getPins: () => Promise<PinDefinition[]>
 }
 
 const plugins = [`<popup />`]
 
-const pins = useState<Pin[]>('pins', () => [])
+const pins = useState<PinDefinition[]>('definitions', () => [])
 
 const props = withDefaults(defineProps<Props>(), {
   initialHtml: '',
