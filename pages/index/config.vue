@@ -3,13 +3,16 @@ import Controller from '~/utils/controller';
 
 const pins = useState<PinDefinition[]>('definitions')
 const target = useState<Target>('target')
+let scrollPosition = 0
 
 onMounted(() => {
+  scrollPosition = window.scrollY
   document.body.style.overflow = 'hidden'
 })
 
 onUnmounted(() => {
   document.body.style.overflow = 'auto'
+  window.scrollTo(0, scrollPosition)
 })
 
 const handleSelectPin = (pin: PinDefinition) => {
