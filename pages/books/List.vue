@@ -2,7 +2,7 @@
 const router = useRouter()
 
 const gotoBook = (slug: string) => {
-  router.push(`/reader/${slug}`)
+  router.push(`/?s=${slug}`)
 }
 
 interface Props {

@@ -71,7 +71,7 @@ onUnmounted(() => {
       class="popop-container absolute z-10 top-0 left-0 font-sans">
 
       <div class="popop absolute">
-        <div ref="content" class="popop-content w-96 h-48 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
+        <div ref="content" class="popop-content w-96 h-64 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
           <Pin :editor="props.editor" />
         </div>
       </div>

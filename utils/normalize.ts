@@ -1,20 +1,24 @@
 import { type HTMLContent } from "@tiptap/core"
-import type {Pin, Sentence} from "./types"
+import type {PinDefinition, Sentence} from "./types"
 
 export default function normalize(
   data: Sentence[],
-  pins?: Pin[],
+  pins?: PinDefinition[],
 ): HTMLContent {
   const normalized = data.map((item) => {
-    const { id, sentence } = item
-    return `<p id="${id}">${buildSentence(sentence, pins)}</p>`
+    const { id, sentence, original } = item
+    if (!pins?.length) {
+      return `<p id="${id}">${sentence}</p>`
+    }
+    const withTitle = `title="${original}"`
+    return `<p id="${id}" ${withTitle}>${buildSentence(sentence, pins)}</p>`
   })
   return normalized.join('')
 }
 
 const buildSentence = (
   sentence: Sentence["sentence"],
-  pins: Pin[] = [],
+  pins: PinDefinition[] = [],
 ) => {
   const pinSet = new Set(pins.map((pin) => pin.pin))
   const words = sentence.split(' ')

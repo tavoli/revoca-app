@@ -2,7 +2,13 @@
 import Controller from "~/utils/controller";
 import type {Target} from "~/utils/types";
 
-const query = useRequestURL()
+interface Props {
+  slug: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  slug: '',
+})
 
 const target = useState<Target>('target', () => ({
   bookId: null,
@@ -11,8 +17,7 @@ const target = useState<Target>('target', () => ({
   context: null,
 }))
 
-const slug = query.pathname.split('/')[2]
-const sentence = new Controller(slug)
+const sentence = new Controller(props.slug)
 
 const getInitialData = async () => {
   const data = await sentence.getInitialData(30)
@@ -21,7 +26,7 @@ const getInitialData = async () => {
 }
 
 const nextData = async () => {
-  const data = await sentence.getNextData(10)
+  const data = await sentence.getNextData(3)
   target.value.bookId = sentence.bookId
   return data
 }

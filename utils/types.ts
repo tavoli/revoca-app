@@ -14,6 +14,7 @@ export interface PostPin {
 export interface Sentence {
   id: number
   sentence: string
+  original: string
 }
 
 export interface PinDefinition {
@@ -22,4 +23,5 @@ export interface PinDefinition {
   synonyms: string[]
   definitions: string[]
   partsOfSpeech: string[]
+  selected: boolean
 }

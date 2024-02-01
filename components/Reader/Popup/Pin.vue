@@ -51,7 +51,7 @@ watch(() => target.value.pin, async (currentPin) => {
       </li>
     </ul>
   </div> 
-  <footer class="w-full bg-slate-800 absolute p-2 right-0 bottom-0">
+  <footer class="w-full bg-slate-800 absolute p-2 right-0 bottom-0 rounded-b-md">
     <button @click="handleNewPin" class="btn btn-xs btn-secondary">
       pin +
     </button>

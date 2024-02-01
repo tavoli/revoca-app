@@ -5,6 +5,7 @@ export default class Controller {
   static booksApi = '/api/books'
   static pinsApi = '/api/pins'
   static definitionApi = '/api/definition'
+  static setPinApi = '/api/books/set-pin'
 
   slug = ''
   bookId: number | null
@@ -77,7 +78,13 @@ export default class Controller {
         'Authorization': `${localStorage.getItem('token')}`
       }
     })
-    const data = await response.json()
+
+    let data = []
+
+    if (response.status === 200) {
+      data = await response.json()
+    }
+
     return data
   }
 
@@ -88,5 +95,22 @@ export default class Controller {
     const response = await fetch(`${this.definitionApi}?${qs}`)
     const data = await response.json()
     return data
+  }
+
+  static async setPin(bookId: number, pin: string) {
+    const data = {
+      bookId,
+      pin,
+    }
+    const response = await fetch(`${this.setPinApi}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    const responseData = await response.json()
+    return responseData
   }
 }

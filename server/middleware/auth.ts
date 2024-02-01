@@ -3,6 +3,7 @@ import {Jwt} from "jsonwebtoken"
 const privateRoutes = [
   '/api/books',
   '/api/books/by-pins',
+  '/api/books/set-pin',
   '/api/pins',
   '/api/pins/paginate',
   '/api/sentences/paginate',

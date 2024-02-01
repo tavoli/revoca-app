@@ -1,4 +1,10 @@
+import {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} from '@google/generative-ai';
 import { z } from 'zod'
+import chalk from 'chalk';
 
 import { paginateSentences } from '~/server/repositories/sentence/sentences.repository'
 
@@ -8,6 +14,13 @@ const paginateQuerySchema = z.object({
   n: z.string().regex(numberRegex).optional(),
   s: z.string(),
 })
+
+interface ApiSentenceType {
+  id: number
+  original?: string
+  sentence: string
+  book_id: number
+}
 
 /**
  * @openapi
@@ -36,7 +49,7 @@ const paginateQuerySchema = z.object({
  *         name: l
  *         schema:
  *           type: string
- *         description: The limit of sentences
+ *         description: The limit
  *         default: 10
  *         example: 10
  *
@@ -109,12 +122,11 @@ export default defineEventHandler(async (event) => {
   const cacheCursorK = `${user.username}:${slug}`
 
   const nextCursor = query.data.n === undefined
-    ? await kv.hget<number>(cacheCursorK, 'next_cursor') ?? undefined
-    : +query.data.n
+   ? await kv.hget<number>(cacheCursorK, 'next_cursor') ?? undefined
+   : +query.data.n
 
   const limit = +query.data.l
-
-  const sentences = await paginateSentences(db, slug, limit, nextCursor)
+  const sentences = await paginateSentences(db, slug, limit, nextCursor) as ApiSentenceType[]
 
   if (sentences.length === 0 && nextCursor === undefined) {
     throw createError({
@@ -141,5 +153,104 @@ export default defineEventHandler(async (event) => {
   appendHeader(event, 'X-Next-Cursor', String(lastSentence.id))
   appendHeader(event, 'X-Book-Id', String(lastSentence.book_id))
 
-  return sentences.map(({id, sentence}) => ({id, sentence}))
+  const cachePinsKey = `books:${lastSentence.book_id}:pins`;
+  const pins = await kv.zrange(cachePinsKey, 0, 2, { withScores: true }) as any[];
+
+  // Extract pins with scores as an array of objects
+  const pinsWithScore = updateScores(pins, (score) => score);
+
+  // Check if every pin has a score of 10 or 0
+  const everyPinHasScoreEqualOrLessThan10 = pinsWithScore.every(({ score }) => score <= 10);
+  const everyPinHasScoreEqualToZero = pinsWithScore.every(({ score }) => score === 0);
+
+  // Prepare updated scores based on conditions
+  let updatedScores;
+
+  if (everyPinHasScoreEqualToZero) {
+    updatedScores = updateScores(pins, () => +Date.now());
+  } else if (everyPinHasScoreEqualOrLessThan10) {
+    updatedScores = updateScores(pins, (eachScore) => eachScore - 1);
+  } else {
+    updatedScores = updateScores(pins, () => 10);
+  }
+
+  // Update scores
+  if (pins.length > 0) {
+    const [first, ...rest] = updatedScores;
+    await kv.zadd(cachePinsKey, first, ...rest);
+  }
+
+  // Revoca
+  if (pins.length > 0) {
+    try {
+      await revoca(sentences, pinsWithoutScores(pins));
+    } catch (error) {
+      console.log(chalk.red(error));
+    }
+  }
+
+  return sentences.map(({ id, sentence, original }) => ({ id, sentence, original }))
 })
+
+async function revoca(data: ApiSentenceType[], pins: string[], index = 0) {
+  const minWords = 20;
+
+  if (data[index].sentence.split(" ").length < minWords) {
+    return;
+  }
+
+  const MODEL_NAME = "gemini-pro";
+  const API_KEY = process.env.GEMINI_API_KEY as string;
+
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+  const generationConfig = {
+    temperature: 0.95,
+    topK: 1,
+    topP: 1,
+    maxOutputTokens: 2048,
+  };
+
+  const prompts = [
+    "- Keep the author style",
+    "- Keep the text length similar to the original.",
+    "- Ensure the text is coherent to the original.",
+    "- Ensure the meaning and essence of the text remains the same.",
+    `- Incorporate in the text with creative touch, seamlessly weaving the words: {${pins.toString()}}.`,
+    `\n\n${data[index].sentence}`,
+  ];
+
+  const result = await model.generateContent({
+    contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
+    generationConfig,
+  });
+
+  const response = result.response;
+  const text = response.text();
+
+  data[index].original = data[index].sentence;
+  data[index].sentence = text;
+
+  if (index < data.length - 1) {
+    await revoca(data, pins, index + 1);
+  }
+}
+
+function updateScores(pins: any[], fn: (currentScore: number) => number) {
+  return pins.reduce((acc, pin, index) => {
+    if (index % 2 === 0) {
+      acc.push({ member: pin, score: fn(pins[index + 1]) });
+    }
+    return acc;
+  }, []) as { member: string; score: number }[];
+}
+
+function pinsWithoutScores(pins: any[]) {
+  return pins.reduce((acc, pin, index) => {
+    if (index % 2 === 0) {
+      acc.push(pin);
+    }
+    return acc;
+  }, []) as string[];
+}
