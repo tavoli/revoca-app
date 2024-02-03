@@ -6,6 +6,8 @@ export default class Controller {
   static pinsApi = '/api/pins'
   static definitionApi = '/api/definition'
   static setPinApi = '/api/books/set-pin'
+  static aiInfuseApi = '/api/ai/infuse'
+  static aiSimplifyApi = '/api/ai/simplify'
 
   slug = ''
   bookId: number | null
@@ -110,6 +112,50 @@ export default class Controller {
       },
       body: JSON.stringify(data)
     })
+    const responseData = await response.json()
+    return responseData
+  }
+
+  static async aiInfuse(sentence: string, bookId: number) {
+    const data = {
+      bookId,
+      sentence,
+    }
+
+    const response = await fetch(`${this.aiInfuseApi}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+
+    if (response.status !== 200) {
+      throw new Error('Invalid response')
+    }
+
+    const responseData = await response.json()
+    return responseData
+  }
+
+  static async aiSimplify(sentence: string) {
+    const data = {
+      sentence,
+    }
+    const response = await fetch(`${this.aiSimplifyApi}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+
+    if (response.status !== 200) {
+      throw new Error('Invalid response')
+    }
+
     const responseData = await response.json()
     return responseData
   }

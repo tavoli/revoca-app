@@ -6,17 +6,16 @@ export default function normalize(
   pins?: PinDefinition[],
 ): HTMLContent {
   const normalized = data.map((item) => {
-    const { id, sentence, original } = item
+    const { id, sentence } = item
     if (!pins?.length) {
       return `<p id="${id}">${sentence}</p>`
     }
-    const withTitle = `title="${original}"`
-    return `<p id="${id}" ${withTitle}>${buildSentence(sentence, pins)}</p>`
+    return `<p id="${id}">${buildSentence(sentence, pins)}</p>`
   })
   return normalized.join('')
 }
 
-const buildSentence = (
+export const buildSentence = (
   sentence: Sentence["sentence"],
   pins: PinDefinition[] = [],
 ) => {

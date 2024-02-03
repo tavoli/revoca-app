@@ -1,7 +1,5 @@
 import {
   GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
 } from '@google/generative-ai';
 import { z } from 'zod'
 import chalk from 'chalk';

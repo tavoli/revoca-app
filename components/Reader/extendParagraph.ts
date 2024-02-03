@@ -17,14 +17,12 @@ export const extendParagraph = (
           parseHTML: (element) => {
             return {
               id: element.getAttribute('id'),
-              title: element.getAttribute('title'),
             }
           },
           renderHTML: (attributes) => {
             if (!attributes.id) return {}
             return {
               id: attributes.id,
-              title: attributes.title,
             }
           },
         },
@@ -37,9 +35,6 @@ export const extendParagraph = (
 
         dom.setAttribute('id', node.attrs.meta?.id)
         dom.setAttribute('class', extension.options.HTMLAttributes.class)
-        if (node.attrs.meta?.title) {
-          dom.setAttribute('title', node.attrs.meta?.title)
-        }
         dom.appendChild(content)
 
         const observer = new IntersectionObserver((entries) => {

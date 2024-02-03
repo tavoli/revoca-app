@@ -8,6 +8,8 @@ const privateRoutes = [
   '/api/pins/paginate',
   '/api/sentences/paginate',
   '/api/sentences/initial',
+  '/api/ai/infuse',
+  '/api/ai/simplify',
 ]
 
 /**

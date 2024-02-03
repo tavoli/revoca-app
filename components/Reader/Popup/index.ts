@@ -4,20 +4,20 @@ import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import Component from './Component.vue'
 
 export default Node.create({
-  name: 'popup',
+  name: 'floating-tools',
   group: 'block',
   atom: true,
 
   parseHTML() {
     return [
       {
-        tag: 'popup',
+        tag: 'floating-tools',
       },
     ]
   },
 
   renderHTML({ HTMLAttributes }) {
-    return ['popup', mergeAttributes(HTMLAttributes), 0]
+    return ['floating-tools', mergeAttributes(HTMLAttributes), 0]
   },
 
   addNodeView() {

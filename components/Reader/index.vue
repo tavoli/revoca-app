@@ -9,6 +9,8 @@ import Image from '@tiptap/extension-image'
 import {extendParagraph} from './extendParagraph'
 import Popup from './Popup'
 import type {PinDefinition, Sentence} from '~/utils/types'
+import {HoverMenu} from './Hover/hover'
+import {Loading} from '../Tiptap/Loading'
 
 interface Props {
   getInitialData: () => Promise<Sentence[]>
@@ -16,7 +18,7 @@ interface Props {
   getPins: () => Promise<PinDefinition[]>
 }
 
-const plugins = [`<popup />`]
+const plugins = [`<floating-tools />`]
 
 const pins = useState<PinDefinition[]>('definitions', () => [])
 
@@ -40,21 +42,25 @@ const CustomParagraph = extendParagraph(Paragraph, {
 const editor = useEditor({
   content: '',
   extensions: [
+    Loading,
     Heading,
     CustomParagraph.configure({
       HTMLAttributes: {
-        class: 'py-4',
+        class: 'py-4 pl-14 pr-4 relative',
       },
     }),
     Document,
     Image,
     Text,
-    Bold.configure({
+    (Bold as any).configure({
       HTMLAttributes: {
         class: 'font-bold bg-green-600 rounded-md',
       },
     }),
     Popup,
+    HoverMenu.configure({
+      element: '#hover-menu'
+    }),
   ],
   editable: false,
   editorProps: {
@@ -79,5 +85,6 @@ onMounted(async () => {
   <Head>
     <link rel="stylesheet" href="/font/bookerly.css" />
   </Head>
+  
   <editor-content :editor="editor" />
 </template>

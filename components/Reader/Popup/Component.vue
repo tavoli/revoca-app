@@ -3,6 +3,7 @@ import {nodeViewProps, NodeViewWrapper} from '@tiptap/vue-3'
 
 import type {Target} from '~/utils/types';
 import Pin from './Pin.vue'
+import HoverPopover from '../Hover/HoverPopover.vue';
 
 const props = defineProps(nodeViewProps)
 
@@ -65,6 +66,8 @@ onUnmounted(() => {
 
 <template>
   <node-view-wrapper>
+    <HoverPopover :editor="props.editor" />
+
     <div ref="popop" 
       :class="{ hidden }"
       :style="style" 
