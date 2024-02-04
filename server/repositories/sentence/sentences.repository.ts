@@ -24,6 +24,14 @@ export async function getAllInitialSentences(db: Kysely<Database>, slug: string,
   return query.orderBy('sentences.id', 'asc').execute();
 }
 
+export async function getAllSentences(db: Kysely<Database>, slug: string) {
+  let query = db.selectFrom('sentences')
+    .select(['sentences.id', 'sentence', 'book_id'])
+    .innerJoin('books', 'sentences.book_id', 'books.id')
+    .where('books.slug', '=', slug)
+  return query.orderBy('sentences.id', 'asc').execute();
+}
+
 export async function paginateSentences(db: Kysely<Database>, slug: string, limit = 10, nextCursor?: number) {
   let query =  db.selectFrom('sentences')
     .select(['sentences.id', 'sentence', 'book_id'])

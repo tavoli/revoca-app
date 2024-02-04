@@ -91,6 +91,9 @@ export default defineEventHandler(async (event) => {
     }
 
     setResponseStatus(event, 200);
+
+    setCookie(event, "token", token);
+
     return { token };
   } catch (error) {
     console.error(error);

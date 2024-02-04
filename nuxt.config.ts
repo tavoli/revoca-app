@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   devtools: {enabled: true},
   modules: ['@nuxtjs/tailwindcss'],
+  experimental: { payloadExtraction: true },
   app: {
     head: {
       link: [

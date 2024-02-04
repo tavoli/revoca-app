@@ -85,6 +85,6 @@ onMounted(async () => {
   <Head>
     <link rel="stylesheet" href="/font/bookerly.css" />
   </Head>
-  
+
   <editor-content :editor="editor" />
 </template>

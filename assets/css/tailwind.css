@@ -8,7 +8,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-md text-gray-200 font-semibold;
+    @apply px-4 py-2 rounded-md text-slate-200 font-semibold;
   }
 
   .btn-xs {
@@ -32,11 +32,11 @@
   }
 
   .btn-secondary {
-    @apply bg-gray-500 hover:bg-gray-600;
+    @apply bg-slate-800 hover:bg-slate-700;
   }
 
   .btn-tertiary {
-    @apply bg-green-500 hover:bg-green-600;
+    @apply bg-green-800 hover:bg-green-700;
   }
 
   .overflow-pretty {

@@ -14,7 +14,6 @@ export interface PostPin {
 export interface Sentence {
   id: number
   sentence: string
-  original: string
 }
 
 export interface PinDefinition {

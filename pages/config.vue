@@ -1,27 +1,16 @@
 <script lang="tsx" setup>
 import Controller from '~/utils/controller';
 
-const pins = useState<PinDefinition[]>('definitions')
-const target = useState<Target>('target')
-let scrollPosition = 0
+const route = useRoute()
 
-onMounted(() => {
-  scrollPosition = window.scrollY
-  document.body.style.overflow = 'hidden'
-})
+const slug = route.query.slug as string
 
-onUnmounted(() => {
-  document.body.style.overflow = 'auto'
-  window.scrollTo(0, scrollPosition)
-})
+const cache = useNuxtData<any>(slug)
+const pins = cache.data.value.pins
 
 const handleSelectPin = (pin: PinDefinition) => {
   pin.selected = !pin.selected
-  if (target.value.bookId) {
-    Controller.setPin(target.value.bookId, pin.pin)
-  } else {
-    console.error('bookId is null')
-  }
+  Controller.setPin(slug, pin.pin)
 }
 </script>
 

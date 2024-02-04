@@ -99,9 +99,9 @@ export default class Controller {
     return data
   }
 
-  static async setPin(bookId: number, pin: string) {
+  static async setPin(slug: string, pin: string) {
     const data = {
-      bookId,
+      slug,
       pin,
     }
     const response = await fetch(`${this.setPinApi}`, {

@@ -119,19 +119,16 @@ export default defineEventHandler(async (event) => {
     await kv.zadd(cachePinsKey, first, ...rest);
   }
 
-  // Revoca
   if (pins.length > 0) {
     try {
-      const generatedSentence = await revoca(
+      const generatedSentence = await generateContentAsStream(
         body.sentence,
         pinsWithoutScores(pins)
       );
 
       console.log(chalk.green(pinsWithoutScores(pins)));
 
-      if (generatedSentence) {
-        return { generated: generatedSentence, pins: pinsWithoutScores(pins) };
-      }
+      return sendStream(event, generatedSentence)
     } catch (error) {
       console.log(chalk.red(error));
       throw createError({
@@ -147,13 +144,7 @@ export default defineEventHandler(async (event) => {
   });
 });
 
-async function revoca(sentence: string, pins: string[]) {
-  const minWords = 20;
-
-  if (sentence.split(" ").length < minWords) {
-    return;
-  }
-
+async function generateContentAsStream(sentence: string, pins: string[]) {
   const MODEL_NAME = "gemini-pro";
   const API_KEY = process.env.GEMINI_API_KEY as string;
 
@@ -164,7 +155,9 @@ async function revoca(sentence: string, pins: string[]) {
     temperature: 0.95,
     topK: 1,
     topP: 1,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 500,
+    candidateCount: 1,
+    stopSequences: ['[DONE]'],
   };
 
   const prompts = [
@@ -176,15 +169,41 @@ async function revoca(sentence: string, pins: string[]) {
     `\n\n${sentence}`,
   ];
 
-  const result = await model.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
-    generationConfig,
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const result = await model.generateContentStream({
+          contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
+          generationConfig,
+        });
+
+        for await (const chunk of result.stream) {
+          if (chunk?.candidates?.length) {
+            for (const candidate of chunk.candidates) {
+              console.log(
+                chalk.yellow(
+                  `Candidate: ${candidate.content.parts}`
+                )
+              );
+
+              const text = candidate.content.parts.map(part => part.text).join("");
+              const encodedText = new TextEncoder().encode(text);
+              controller.enqueue(encodedText);
+            }
+          } else {
+            const encodedText = new TextEncoder().encode('ERROR: No candidates found.');
+            controller.enqueue(encodedText);
+          }
+        }
+
+        controller.close();
+      } catch (error) {
+        controller.error(error);
+      }
+    },
   });
 
-  const response = result.response;
-  const text = response.text();
-
-  return text;
+  return stream;
 }
 
 function updateScores(pins: any[], fn: (currentScore: number) => number) {

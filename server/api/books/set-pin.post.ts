@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const setPinBodySchema = z.object({
-  bookId: z.number(),
+  slug: z.string(),
   pin: z.string(),
 })
 
@@ -23,10 +23,10 @@ const setPinBodySchema = z.object({
  *           schema:
  *             type: object
  *             properties:
- *               bookId:
- *                 type: number
- *                 description: The id of the book
- *                 example: 1
+ *               slug:
+ *                 type: string
+ *                 description: The slug of the book
+ *                 example: 'something-something'
  *                 required: true
  *               pin:
  *                 type: string
@@ -35,7 +35,7 @@ const setPinBodySchema = z.object({
  *                 required: true
  *               
  *           example:
- *             bookId: 1
+ *             slug: 'something-something'
  *             pin: 'meant'
  *     
  *     responses:
@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
 
   const body = result.data
 
-  const key = `books:${body.bookId}:pins`
+  const key = `books:${body.slug}:pins`
   const data = {
     member: body.pin,
     score: +new Date(),

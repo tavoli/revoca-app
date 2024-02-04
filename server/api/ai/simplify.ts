@@ -87,11 +87,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const generatedSentence = await prompt(body.sentence);
+    const generatedSentence = await generateContentAsStream(body.sentence);
 
-    if (generatedSentence) {
-      return { generated: generatedSentence };
-    }
+    return sendStream(event, generatedSentence);
   } catch (error) {
     console.log(chalk.red(error));
     throw createError({
@@ -101,7 +99,7 @@ export default defineEventHandler(async (event) => {
   }
 });
 
-async function prompt(sentence: string) {
+async function generateContentAsStream(sentence: string) {
   const MODEL_NAME = "gemini-pro";
   const API_KEY = process.env.GEMINI_API_KEY as string;
 
@@ -113,6 +111,8 @@ async function prompt(sentence: string) {
     topK: 1,
     topP: 1,
     maxOutputTokens: 2048,
+    candidateCount: 1,
+    stopSequences: ['[DONE]'],
   };
 
   const prompts = [
@@ -122,13 +122,41 @@ async function prompt(sentence: string) {
     `\n\n${sentence}`,
   ];
 
-  const result = await model.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
-    generationConfig,
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const result = await model.generateContentStream({
+          contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
+          generationConfig,
+        });
+
+        for await (const chunk of result.stream) {
+          if (chunk?.candidates?.length) {
+            for (const candidate of chunk.candidates) {
+              console.log(
+                chalk.yellow(
+                  `Candidate: ${candidate.content.parts}`
+                )
+              );
+
+              const text = candidate.content.parts.map(part => part.text).join("");
+              const encodedText = new TextEncoder().encode(text);
+              controller.enqueue(encodedText);
+            }
+          } else {
+            const encodedText = new TextEncoder().encode('ERROR: No candidates found.');
+            controller.enqueue(encodedText);
+          }
+        }
+
+        controller.close();
+      } catch (error) {
+        controller.error(error);
+      }
+    },
   });
 
-  const response = result.response;
-  const text = response.text();
-
-  return text;
+  return stream;
 }
+
+
