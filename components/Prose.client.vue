@@ -225,8 +225,7 @@ async function getDefinition({ pin, dispatch }: any) {
 }
 
 function createNodes(chunk: string) {
-  const pins: string[] = ["conversation", "rule", "touched"];
-  const pinSet = new Set(pins);
+  const pinSet = new Set((props.pins as PinDefinition[]).map((pin: PinDefinition) => pin.pin))
 
   const w = (word: string) => word.replace(/[^a-zA-Z]/g, "");
 
