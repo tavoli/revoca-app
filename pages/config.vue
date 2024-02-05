@@ -28,25 +28,27 @@ const pins = ref(cache.data.value?.pins.map((pin: PinDefinition) => {
   }
 }) ?? [])
 
-const handleSelectPin = (pin: PinDefinition) => {
+const handleSelectPin = (pin: string) => {
   useFetch(`/api/books/toggle-pin`, {
     headers: {
       'Authorization': `${localStorage.getItem('token')}`,
     },
     method: 'POST',
     body: {
-      pin: pin.pin,
+      pin,
       slug,
     },
     onRequest() {
-      const index = pins.value.findIndex((p: any) => p.pin === pin.pin)
+      const index = pins.value.findIndex((p: any) => p.pin === pin)
       pins.value[index].selected = !pins.value[index].selected
 
-      if (pinned.data.value?.includes(pin.pin)) {
-        pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin.pin)
+      if (pinned.data.value?.includes(pin)) {
+        pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin)
       } else {
-        pinned.data.value = [...pinned.data.value, pin.pin]
+        pinned.data.value = [...pinned.data.value, pin]
       }
+
+      return true
     },
   })
 }
@@ -70,13 +72,13 @@ const handleSelectPin = (pin: PinDefinition) => {
         <div class="grid grid-cols-4 gap-4 mt-14">
 
           <button class="h-16 grid place-items-center border rounded-md" 
-            @click="handleSelectPin(pin)"
-            v-for="pin in pins" 
-            :class="pin.selected && 'bg-green-900'"
-            :key="pin.id">
+            v-for="p in pins" 
+            @click="handleSelectPin(p.pin)"
+            :class="p.selected && 'bg-green-900'"
+            :key="p.id">
 
             <h1 class="text-gray-200 text-xl text-left">
-              {{ pin.pin }}
+              {{ p.pin }}
             </h1>
           </button> 
 

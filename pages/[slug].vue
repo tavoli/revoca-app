@@ -4,6 +4,8 @@ const route = useRoute()
 
 const slug = route.params.slug as string
 
+// TODO login when token is not present
+// TODO save the generated sentence on cache
 const fetchInitialData = async () => {
   const [sentences, pins] = await Promise.all([
     $fetch(`/api/sentences`, {

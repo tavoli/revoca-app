@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .prose blockquote p {
+    @apply text-slate-300;
+
+    strong {
+      @apply bg-green-800 text-slate-100;
+    }
+  }
+}
+
 .mode-dark {
   @apply bg-slate-950;
 }
