@@ -47,7 +47,7 @@ const {data, pending} = await useLazyAsyncData(slug, fetchInitialData, {
     </div>
     <div class="flex gap-y-2 flex-col items-center" v-else>
       <div id="content" class="hidden">
-        <p class="py-4 relative" v-for="s in data.sentences" :key="s.id" :id="s.id">
+        <p class="py-4 relative" v-for="s in data?.sentences" :key="s.id" :id="s.id">
           {{ s.sentence }}
         </p>
       </div>
