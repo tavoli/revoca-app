@@ -2,12 +2,14 @@
 const showContent = ref(false)
 
 const handleInfuse = () => {
+  showContent.value = false
   window.view.dispatch(
     window.view.state.tr.setMeta('DISPATCH', { type: 'INFUSE_TEXT' })
   )
 }
 
 const handleSimplify = () => {
+  showContent.value = false
   window.view.dispatch(
     window.view.state.tr.setMeta('DISPATCH', { type: 'SIMPLIFY_TEXT' })
   )

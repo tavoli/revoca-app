@@ -73,8 +73,6 @@ const view = new EditorView(editor, {
 window.view = view
 
 watch(() => element.value, () => {
-  console.log('Prose.client.vue updated')
-
   if (element.value) {
     element.value.appendChild(editor.children[0])
 
@@ -162,7 +160,7 @@ function update(event: DispatchEvent) {
         )
 
         aiInfuseStream({
-          text: view.state.doc.textBetween(from, to),
+          sentence: view.state.doc.textBetween(from, to),
 
           dispatch: (chunk, chunkOpt) => {
             view.dispatch(
@@ -178,6 +176,35 @@ function update(event: DispatchEvent) {
       }
       break
     case 'SIMPLIFY_TEXT':
+      const fromSimplify = nodeTarget.value?.from
+      const toSimplify = nodeTarget.value?.to
+
+      if (fromSimplify && toSimplify) {
+        const newLine = markSchema.node('blockquote', null, [
+          markSchema.node('paragraph', null, [
+            markSchema.text('\n')
+          ]),
+        ])
+
+        view.dispatch(
+          view.state.tr.insert(fromSimplify, newLine)
+        )
+
+        aiSimplifyStream({
+          sentence: view.state.doc.textBetween(fromSimplify, toSimplify),
+
+          dispatch: (chunk, chunkOpt) => {
+            view.dispatch(
+              view.state.tr.insert(chunkOpt.from + 2, createNodes(chunk))
+            )
+          },
+
+          initialOpt: {
+            from: fromSimplify + 1,
+            to: toSimplify
+          }
+        })
+      }
       break
     default:
       view.updateState(
@@ -188,7 +215,7 @@ function update(event: DispatchEvent) {
 }
 
 interface StreamOptions {
-  text: string
+  sentence: string
   dispatch: (
     chunk: string,
     chunkOpt: {
@@ -201,7 +228,7 @@ interface StreamOptions {
   }
 }
 
-async function aiInfuseStream({ text, dispatch, initialOpt }: StreamOptions) {
+async function aiInfuseStream({ sentence, dispatch, initialOpt }: StreamOptions) {
   const response = await fetch("/api/ai/infuse", {
     method: "POST",
     headers: {
@@ -209,8 +236,51 @@ async function aiInfuseStream({ text, dispatch, initialOpt }: StreamOptions) {
       "Authorization": `${localStorage.getItem('token')}`
     },
     body: JSON.stringify({
-      bookId: 6,
-      sentence: text
+      sentence,
+      slug,
+    })
+  })
+
+  const streamResponse = response.body
+
+  if (!streamResponse) {
+    return
+  }
+
+  const reader = streamResponse.getReader()
+
+  const decoder = new TextDecoder();
+
+  let from = initialOpt.from
+  let to = initialOpt.to
+
+  while (true) {
+    const { done, value } = await reader.read()
+
+    if (done) {
+      break
+    }
+
+    const chunkValue = decoder.decode(value);
+
+    to = from + chunkValue.length
+
+    dispatch(chunkValue, { from, to })
+
+    from = to
+  }
+}
+
+async function aiSimplifyStream({ sentence, dispatch, initialOpt }: StreamOptions) {
+  const response = await fetch("/api/ai/simplify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({
+      sentence,
+      slug,
     })
   })
 

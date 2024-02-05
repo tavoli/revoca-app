@@ -4,7 +4,7 @@ import chalk from 'chalk';
 
 const aiSentenceBody = z.object({
   sentence: z.string(),
-  bookId: z.number(),
+  slug: z.string(),
 })
 
 /**
@@ -25,15 +25,15 @@ const aiSentenceBody = z.object({
  *           schema:
  *             type: object
  *             properties:
- *               bookId:
- *                 type: integer
- *                 format: int
+ *               slug:
+ *                 type: string
+ *                 format: string
  *                 minimum: 1
  *               sentence:
  *                 type: string
  *                 format: string
  *           example:
- *             bookId: 1
+ *             slug: 'the-quick-brown-fox'
  *             sentence: "Sample Pin Text"
  *
  *     responses:
@@ -92,7 +92,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const cachePinsKey = `books:${body.bookId}:pins`;
+  const cachePinsKey = pinGetKey(body.slug);
   const pins = await kv.zrange(cachePinsKey, 0, 2, { withScores: true }) as any[];
 
   // Extract pins with scores as an array of objects
@@ -161,11 +161,9 @@ async function generateContentAsStream(sentence: string, pins: string[]) {
   };
 
   const prompts = [
-    "- Keep the author style",
-    "- Keep the text length similar to the original.",
-    "- Ensure the text is coherent to the original.",
+    `- Infuse in the text with creative touch, seamlessly weaving the words: ${pins.toString()}.`,
     "- Ensure the meaning and essence of the text remains the same.",
-    `- Incorporate in the text with creative touch, seamlessly weaving the words: {${pins.toString()}}.`,
+    `- Use simpler language.`,
     `\n\n${sentence}`,
   ];
 
