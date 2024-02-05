@@ -3,9 +3,9 @@ import { z } from 'zod'
 import {insertPin} from '~/server/repositories/pin/pin.repository'
 
 const pinBodySchema = z.object({
-  book_id: z.number().int().positive(),
-  sentence_id: z.number().int().positive(),
+  id: z.number().int().positive(),
   pin: z.string().min(1).max(255),
+  slug: z.string().min(1),
 })
 
 /**
@@ -26,22 +26,22 @@ const pinBodySchema = z.object({
  *           schema:
  *             type: object
  *             properties:
- *               book_id:
+ *               id:
  *                 type: integer
  *                 format: int
  *                 minimum: 1
- *               sentence_id:
- *                 type: integer
- *                 format: int
+ *               slug:
+ *                 type: string
+ *                 format: string
  *                 minimum: 1
  *               pin:
  *                 type: string
  *                 minLength: 1
  *                 maxLength: 255
  *           example:
- *             book_id: 1
- *             sentence_id: 2
- *             pin: "Sample Pin Text"
+ *             id: 1
+ *             slug: 'the-quick-brown-fox'
+ *             pin: 'quick'
  *
  *     responses:
  *       '200':
@@ -98,8 +98,8 @@ export default defineEventHandler(async (event) => {
 
   const pin = {
     user_id: user.id,
-    book_id: body.book_id,
-    sentence_id: body.sentence_id,
+    slug: body.slug,
+    sentence_id: body.id,
     pin: body.pin,
     parts_of_speech: partsOfSpeech || null,
     definitions: definitions || null,

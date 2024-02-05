@@ -27,14 +27,12 @@ interface NodeTarget {
   id: number
 }
 
-const props = defineProps({
-  pins: Array
-})
-
 const element = ref<HTMLElement>()
 const nodeTarget = useState<NodeTarget>('nodeTarget')
 const definitions = useState<PinDefinition[]>('definitions', () => [])
 const currentDefinition = useState<PinDefinition>('currentDefinition')
+const slug = useSlug()
+const cache = useNuxtData(slug)
 
 const parser = DOMParser.fromSchema(markSchema)
 const content = document.querySelector('#content') as HTMLElement
@@ -89,16 +87,43 @@ watch(() => element.value, () => {
 
 function update(event: DispatchEvent) {
   switch (event.type) {
+    case 'PIN':
+      const stateSelection = window.view.state.selection
+      const pin = window.view.state.doc.textBetween(
+        stateSelection.from, stateSelection.to, ' '
+      )
+
+      const body = {
+        id: nodeTarget.value.id,
+        slug,
+        pin,
+      }
+
+      useFetch(`/api/pins`, {
+        headers: {
+          'Authorization': `${localStorage.getItem('token')}`,
+        },
+        method: 'POST',
+        body,
+        onRequest: () => {
+          cache.data.value = {
+            ...cache.data.value,
+            pins: [
+              ...cache.data.value.pins,
+              currentDefinition.value,
+            ],
+          }
+        },
+      })
+      break
     case 'SELECTION':
       nodeTarget.value.id = event.payload.id
       const selection = event.payload.selection
 
-      console.log('nodeTarget', nodeTarget.value)
-
       // TODO: optmistic update directly on useNuxtData to avoid seek for definition at twice (server and local)
 
       // try from server first
-      let definitionFromCache = props.pins?.find((pin: any) => pin.pin === selection)
+      let definitionFromCache = cache.data.value.pins?.find((pin: any) => pin.pin === selection)
 
       // try from local cache
       if (!definitionFromCache) {
@@ -225,7 +250,7 @@ async function getDefinition({ pin, dispatch }: any) {
 }
 
 function createNodes(chunk: string) {
-  const pinSet = new Set((props.pins as PinDefinition[]).map((pin: PinDefinition) => pin.pin))
+  const pinSet = new Set((cache.data.value.pins as PinDefinition[]).map((pin: PinDefinition) => pin.pin))
 
   const w = (word: string) => word.replace(/[^a-zA-Z]/g, "");
 
@@ -247,5 +272,5 @@ function createNodes(chunk: string) {
 <template>
   <LeftMenu />
   <FloatPopup />
-  <div id="prose" ref="element" class="text-slate-300" />
+  <div id="prose" ref="element" class="font-bookerly prose prose-md prose-slate prose-dark text-slate-300" />
 </template>

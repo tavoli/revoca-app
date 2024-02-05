@@ -1,17 +1,10 @@
 <script setup lang="tsx">
-import Controller from '~/utils/controller';
-
 const currentDefinition = useState<PinDefinition>('currentDefinition')
-const nodeTarget = useState<any>('nodeTarget')
 
 const handleNewPin = () => {
-  console.log('handleNewPin', nodeTarget.value)
-  // editor.commands.toggleBold()
-  // Controller.postPin({
-  //   book_id: target.value.bookId!,
-  //   sentence_id: target.value.sentenceId!,
-  //   pin: target.value.pin!,
-  // })
+  window.view.dispatch(
+    window.view.state.tr.setMeta('DISPATCH', { type: 'PIN' })
+  )
 }
 </script>
 
@@ -22,7 +15,7 @@ const handleNewPin = () => {
       <div class="w-96 h-64 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
 
         <div class="mb-16 flex flex-col gap-y-2" v-if="currentDefinition">
-          <ul class="flex flex-wrap gap-x-1 text-xs">
+          <ul class="flex flex-wrap gap-x-1 text-xs text-slate-200">
             <li v-for="partOfSpeech in currentDefinition.partsOfSpeech" :key="partOfSpeech" class="border-1 border rounded-md p-1">
               {{ partOfSpeech }}
             </li>
@@ -34,7 +27,7 @@ const handleNewPin = () => {
               </li>
             </ul>
           </div> 
-          <ul class="flex flex-wrap gap-1 text-xs">
+          <ul class="flex flex-wrap gap-1 text-xs text-slate-200">
             <li v-for="syn in currentDefinition.synonyms" :key="syn" class="border-1 border rounded-md p-1">
               {{ syn }}
             </li>

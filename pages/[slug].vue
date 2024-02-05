@@ -4,44 +4,35 @@ const route = useRoute()
 
 const slug = route.params.slug as string
 
-const fetchAllSentences = async () => {
-  const res = await $fetch<any>(`/api/sentences`, {
-    query: {
-      s: slug,
-    },
-    headers: {
-      Authorization: `${token.value || localStorage.getItem('token')}`,
-    },
-  })
-  return res
-}
-
-const fetchAllPins = async () => {
-  const res = await $fetch<any>(`/api/pins/paginate`, {
-    headers: {
-      Authorization: `${token.value || localStorage.getItem('token')}`,
-    },
-  })
-  return res
-}
-
-const promises = async () => {
-  const [pins, sentences] = await Promise.all([
-    fetchAllPins(),
-    fetchAllSentences()
+const fetchInitialData = async () => {
+  const [sentences, pins] = await Promise.all([
+    $fetch(`/api/sentences`, {
+      query: {
+        s: slug,
+      },
+      headers: {
+        Authorization: `${token.value || localStorage.getItem('token')}`,
+      },
+    }),
+    $fetch(`/api/pins/paginate`, {
+      query: {
+        l: 100,
+      },
+      headers: {
+        Authorization: `${token.value || localStorage.getItem('token')}`,
+      },
+    }).catch(() => []),
   ])
+
   return { sentences, pins }
 }
 
-const {data, pending} = await useLazyAsyncData(`${slug}`, promises, {
+const {data, pending} = await useLazyAsyncData(slug, fetchInitialData, {
   getCachedData(key) {
-    const cache = useNuxtData<any>(key)
+    const cache = useNuxtData(key)
     return cache.data.value
   },
 })
-
-const sentences = data.value?.sentences ?? []
-const pins = data.value?.pins ?? []
 </script>
 
 <template>
@@ -56,13 +47,13 @@ const pins = data.value?.pins ?? []
     </div>
     <div class="flex gap-y-2 flex-col items-center" v-else>
       <div id="content" class="hidden">
-        <p class="py-4 relative" v-for="s in sentences" :key="s.id" :id="s.id">
+        <p class="py-4 relative" v-for="s in data.sentences" :key="s.id" :id="s.id">
           {{ s.sentence }}
         </p>
       </div>
     </div>
     <ClientOnly v-if="!pending">
-      <Prose :pins="pins" />
+      <Prose />
     </ClientOnly>
   </main>
 </template>

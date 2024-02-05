@@ -1,6 +1,8 @@
 import {EditorView, type NodeView} from "prosemirror-view"
 import {Node} from "prosemirror-model"
 
+let isBlinded = false
+
 export default class ParagraphView implements NodeView {
   dom: InstanceType<typeof window.Node>
   contentDOM: HTMLElement
@@ -15,20 +17,23 @@ export default class ParagraphView implements NodeView {
     this.view = view
     this.node = node
 
-    this.contentDOM.classList.add("py-4")
-    this.contentDOM.id = node.attrs.id
-
     this.dom.addEventListener("mouseover", this.mouseover.bind(this))
   }
 
+  setSelection() {
+    const hasSelection = 
+      this.view.state.selection.from < this.view.state.selection.to
+    isBlinded = hasSelection
+  }
+
   private mouseover() {
+    if (isBlinded) return
     const pos = this.view.posAtDOM(this.dom, 0)
     this.popover(pos)
     this.dispatchPos(pos)
   }
 
   private dispatchPos(pos: number) {
-    console.log(this.node.attrs.id)
     this.view.dispatch(
       this.view.state.tr.setMeta('DISPATCH', {
         type: 'NODE_TARGET',

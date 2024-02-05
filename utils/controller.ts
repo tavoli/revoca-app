@@ -5,7 +5,7 @@ export default class Controller {
   static booksApi = '/api/books'
   static pinsApi = '/api/pins'
   static definitionApi = '/api/definition'
-  static setPinApi = '/api/books/set-pin'
+  static togglePinApi = '/api/books/toggle-pin'
   static aiInfuseApi = '/api/ai/infuse'
   static aiSimplifyApi = '/api/ai/simplify'
 
@@ -99,12 +99,12 @@ export default class Controller {
     return data
   }
 
-  static async setPin(slug: string, pin: string) {
+  static async togglePin(slug: string, pin: string) {
     const data = {
       slug,
       pin,
     }
-    const response = await fetch(`${this.setPinApi}`, {
+    const response = await fetch(`${this.togglePinApi}`, {
       method: 'POST',
       headers: {
         'Authorization': `${localStorage.getItem('token')}`,

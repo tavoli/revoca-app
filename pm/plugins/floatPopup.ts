@@ -1,17 +1,19 @@
 import {Plugin} from "prosemirror-state";
 import type {EditorView} from "prosemirror-view";
 
-let timeout: any
-function debounce(callback: any, ms: number) {
-  clearTimeout(timeout)
-  timeout = setTimeout(callback, ms)
-}
+let mouseClickes = 0
 
 export default new Plugin({
-  view: () => {
-    return {
-      update: (view: EditorView) => {
-        debounce(() => onUpdate(view), 100)
+  props: {
+    handleDOMEvents: {
+      mousedown: () => {
+        mouseClickes++
+      },
+      mouseup: (view: EditorView) => {
+        mouseClickes--
+        if (mouseClickes === 0) {
+          onUpdate(view)
+        }
       }
     }
   }
@@ -21,7 +23,7 @@ function onUpdate(view: EditorView) {
   const {from, to} = view.state.selection
   const selection = view.state.doc.textBetween(from, to, " ")
 
-  if (selection) {
+  if (selection.trim().length > 0) {
     const rect = view.coordsAtPos(from)
 
     dispatchSelection(view, selection)
@@ -32,11 +34,16 @@ function onUpdate(view: EditorView) {
 }
 
 function dispatchSelection(view: EditorView, selection: string) {
+  const from = view.state.selection.from
+  const start = view.state.doc.resolve(from).start(-1)
+  const node = view.state.doc.nodeAt(start)
+
   view.dispatch(
     view.state.tr.setMeta("DISPATCH", {
       type: "SELECTION",
       payload: {
         selection,
+        id: +node?.attrs.id
       }
     })
   )

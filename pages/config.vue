@@ -1,16 +1,54 @@
 <script lang="tsx" setup>
-import Controller from '~/utils/controller';
-
 const route = useRoute()
 
 const slug = route.query.slug as string
 
-const cache = useNuxtData<any>(slug)
-const pins = cache.data.value.pins
+const cache = useNuxtData(slug)
+
+const fetchAllPinned = async () => {
+  return await $fetch(`/api/books/pinned`, {
+    query: {
+      s: slug,
+    },
+  })
+}
+
+const pinned = await useLazyAsyncData(`${slug}:pinned`, fetchAllPinned, {
+  getCachedData(key) {
+    const cache = useNuxtData(key)
+    return cache.data.value
+  },
+})
+
+const pins = ref(cache.data.value?.pins.map((pin: PinDefinition) => {
+  const selected = pinned.data.value?.includes(pin.pin)
+  return {
+    ...pin,
+    selected,
+  }
+}) ?? [])
 
 const handleSelectPin = (pin: PinDefinition) => {
-  pin.selected = !pin.selected
-  Controller.setPin(slug, pin.pin)
+  useFetch(`/api/books/toggle-pin`, {
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+    method: 'POST',
+    body: {
+      pin: pin.pin,
+      slug,
+    },
+    onRequest() {
+      const index = pins.value.findIndex((p: any) => p.pin === pin.pin)
+      pins.value[index].selected = !pins.value[index].selected
+
+      if (pinned.data.value?.includes(pin.pin)) {
+        pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin.pin)
+      } else {
+        pinned.data.value = [...pinned.data.value, pin.pin]
+      }
+    },
+  })
 }
 </script>
 

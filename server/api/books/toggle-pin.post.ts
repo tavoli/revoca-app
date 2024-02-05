@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import { z } from 'zod'
 
 const setPinBodySchema = z.object({
@@ -8,13 +9,13 @@ const setPinBodySchema = z.object({
 /**
  * @openapi
  *
- * /books/set-pin:
+ * /books/toggle-pin:
  *   post:
  *     security:
  *       - HeaderAuth: []
  *
- *     summary: Set a pin for a book
- *     description: Set a pin for a book
+ *     summary: Toggle a pin for a book
+ *     description: Set a pin for a book or remove it
  *
  *     requestBody:
  *       required: true
@@ -30,7 +31,7 @@ const setPinBodySchema = z.object({
  *                 required: true
  *               pin:
  *                 type: string
- *                 description: The pin to set
+ *                 description: The pin to toggle
  *                 example: 'something'
  *                 required: true
  *               
@@ -40,7 +41,7 @@ const setPinBodySchema = z.object({
  *     
  *     responses:
  *       '200':
- *         description: The pin was set
+ *         description: The pin was toggled
  *         content:
  *           application/json:
  *             schema:
@@ -90,14 +91,23 @@ export default defineEventHandler(async (event) => {
 
   const body = result.data
 
-  const key = `books:${body.slug}:pins`
+  const key = pinGetKey(body.slug)
   const data = {
     member: body.pin,
     score: +new Date(),
   }
 
+  const log = chalk.green(`[TOGGLE PIN] ${key}`)
+  console.log(log)
+
   try {
-    await kv.zadd(key, data)
+    const exists = await kv.zrank(key, body.pin)
+
+    if (exists !== null) {
+      await kv.zrem(key, body.pin)
+    } else {
+      await kv.zadd(key, data)
+    }
   } catch (error) {
     console.error(error)
     throw createError({

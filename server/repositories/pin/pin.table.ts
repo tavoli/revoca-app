@@ -3,7 +3,7 @@ import { ColumnType, Generated, Insertable, Selectable } from "kysely";
 export interface PinTable {
   id: Generated<number>,
   user_id: string,
-  book_id: number,
+  slug: string,
   sentence_id: number,
   pin: string,
   parts_of_speech?: string | null,

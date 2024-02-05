@@ -25,7 +25,7 @@ function printResult({error, results}: any, direction: string) {
   }
 }
 
-const migrationFolder = path.resolve(__dirname, '../server/utils/migrations')
+const migrationFolder = path.resolve(__dirname, './migrations')
 
 const migrator = new Migrator({
   db,
