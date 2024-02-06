@@ -42,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "kysely": "^0.27.2",
     "nanoid": "^5.0.4",
+    "openai": "^4.26.1",
     "pg-pool": "^3.6.1",
     "prosemirror-model": "^1.19.4",
     "prosemirror-schema-basic": "^1.2.2",
