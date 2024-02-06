@@ -71,6 +71,8 @@ const aiSentenceBody = z.object({
  *               $ref: '#/components/schemas/InternalServerError'
  */
 
+const REPEAT_COUNT = 3;
+
 export default defineEventHandler(async (event) => {
   const result = await readValidatedBody(event, (body) => aiSentenceBody.safeParse(body))
 
@@ -99,7 +101,7 @@ export default defineEventHandler(async (event) => {
   const pinsWithScore = updateScores(pins, (score) => score);
 
   // Check if every pin has a score of 10 or 0
-  const everyPinHasScoreEqualOrLessThan10 = pinsWithScore.every(({ score }) => score <= 10);
+  const everyPinHasScoreEqualOrLess = pinsWithScore.every(({ score }) => score <= REPEAT_COUNT);
   const everyPinHasScoreEqualToZero = pinsWithScore.every(({ score }) => score === 0);
 
   // Prepare updated scores based on conditions
@@ -107,10 +109,10 @@ export default defineEventHandler(async (event) => {
 
   if (everyPinHasScoreEqualToZero) {
     updatedScores = updateScores(pins, () => +Date.now());
-  } else if (everyPinHasScoreEqualOrLessThan10) {
+  } else if (everyPinHasScoreEqualOrLess) {
     updatedScores = updateScores(pins, (eachScore) => eachScore - 1);
   } else {
-    updatedScores = updateScores(pins, () => 10);
+    updatedScores = updateScores(pins, () => REPEAT_COUNT);
   }
 
   // Update scores
