@@ -165,7 +165,7 @@ async function generateContentAsStream(sentence: string, pins: string[]) {
       },
     ],
     temperature: 0.7,
-    max_tokens: sentence.length * 2,
+    max_tokens: sentence.length + 100,
     stream: true,
   };
 
