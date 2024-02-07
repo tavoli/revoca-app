@@ -40,6 +40,7 @@ const optmistic = (pin: string) => {
 }
 
 const handleSelectPin = (pin: string) => {
+  optmistic(pin)
   useFetch(`/api/books/toggle-pin`, {
     headers: {
       'Authorization': `${localStorage.getItem('token')}`,
@@ -48,9 +49,6 @@ const handleSelectPin = (pin: string) => {
     body: {
       pin,
       slug,
-    },
-    onRequest() {
-      optmistic(pin)
     },
   })
 }
