@@ -28,6 +28,17 @@ const pins = ref(cache.data.value?.pins.map((pin: PinDefinition) => {
   }
 }) ?? [])
 
+const optmistic = (pin: string) => {
+  const index = pins.value.findIndex((p: any) => p.pin === pin)
+  pins.value[index].selected = !pins.value[index].selected
+
+  if (pinned.data.value?.includes(pin)) {
+    pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin)
+  } else {
+    pinned.data.value = [...pinned.data.value, pin]
+  }
+}
+
 const handleSelectPin = (pin: string) => {
   useFetch(`/api/books/toggle-pin`, {
     headers: {
@@ -39,16 +50,7 @@ const handleSelectPin = (pin: string) => {
       slug,
     },
     onRequest() {
-      const index = pins.value.findIndex((p: any) => p.pin === pin)
-      pins.value[index].selected = !pins.value[index].selected
-
-      if (pinned.data.value?.includes(pin)) {
-        pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin)
-      } else {
-        pinned.data.value = [...pinned.data.value, pin]
-      }
-
-      return true
+      optmistic(pin)
     },
   })
 }
