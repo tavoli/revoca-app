@@ -1,40 +1,21 @@
 <script setup lang="tsx">
-const token = useCookie('token')
 const route = useRoute()
 
 const slug = route.params.slug as string
+const DATA_KEY = factoryDataKeys(slug)
 
 // TODO login when token is not present
 // TODO save the generated sentence on cache
-const fetchInitialData = async () => {
-  const [sentences, pins] = await Promise.all([
-    $fetch(`/api/sentences`, {
-      query: {
-        s: slug,
-      },
-      headers: {
-        Authorization: `${token.value || localStorage.getItem('token')}`,
-      },
-    }),
-    $fetch(`/api/pins/paginate`, {
-      query: {
-        l: 100,
-      },
-      headers: {
-        Authorization: `${token.value || localStorage.getItem('token')}`,
-      },
-    }).catch(() => []),
-  ])
 
-  return { sentences, pins }
-}
-
-const {data, pending} = await useLazyAsyncData(slug, fetchInitialData, {
-  getCachedData(key) {
-    const cache = useNuxtData(key)
-    return cache.data.value
-  },
-})
+const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
+  () => fetchSentences(slug),
+  {
+    getCachedData(key) {
+      const cache = useNuxtData(key)
+      return cache.data.value
+    },
+  }
+)
 </script>
 
 <template>
@@ -49,7 +30,7 @@ const {data, pending} = await useLazyAsyncData(slug, fetchInitialData, {
     </div>
     <div class="flex gap-y-2 flex-col items-center" v-else>
       <div id="content" class="hidden">
-        <p class="py-4 relative" v-for="s in data?.sentences" :key="s.id" :id="s.id">
+        <p class="py-4 relative" v-for="s in sentences" :key="s.id" :id="s.id">
           {{ s.sentence }}
         </p>
       </div>

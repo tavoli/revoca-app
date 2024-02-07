@@ -2,36 +2,45 @@
 const route = useRoute()
 
 const slug = route.query.slug as string
+const DATA_KEY = factoryDataKeys(slug)
+const cache = useNuxtData(DATA_KEY.PINS_PINNED)
 
-const cache = useNuxtData(slug)
+const pinned = await useLazyAsyncData(DATA_KEY.PINNED,
+  () => fetchPinned(slug),
+  {
+    getCachedData: (key) => useNuxtData(key).data.value,
+  }
+)
 
-const fetchAllPinned = async () => {
-  return await $fetch(`/api/books/pinned`, {
-    query: {
-      s: slug,
+const {data: pins} = await useLazyAsyncData(DATA_KEY.PINS_PINNED,
+  fetchPinsPaginate,
+  {
+    getCachedData: (key) => {
+      return useNuxtData(key).data.value
     },
+    transform: (data) => {
+      return data.map((pin) => {
+        const selected = pinned.data.value?.includes(pin.pin)
+        return {
+          ...pin,
+          selected,
+        }
+      })
+    },
+    watch: [pinned.data],
   })
+
+const toggleCached = (pin: string) => {
+  const index = cache.data.value?.findIndex((p: any) => p.pin === pin)
+
+  if (index !== -1) {
+    cache.data.value[index].selected = !cache.data.value[index].selected
+  } else {
+    cache.data.value[index].selected = true
+  }
 }
 
-const pinned = await useLazyAsyncData(`${slug}:pinned`, fetchAllPinned, {
-  getCachedData(key) {
-    const cache = useNuxtData(key)
-    return cache.data.value
-  },
-})
-
-const pins = ref(cache.data.value?.pins.map((pin: PinDefinition) => {
-  const selected = pinned.data.value?.includes(pin.pin)
-  return {
-    ...pin,
-    selected,
-  }
-}) ?? [])
-
-const optmistic = (pin: string) => {
-  const index = pins.value.findIndex((p: any) => p.pin === pin)
-  pins.value[index].selected = !pins.value[index].selected
-
+const appendToPinned = (pin: string) => {
   if (pinned.data.value?.includes(pin)) {
     pinned.data.value = pinned.data.value?.filter((p: any) => p !== pin)
   } else {
@@ -39,18 +48,13 @@ const optmistic = (pin: string) => {
   }
 }
 
+const optmisticUpdate = (pin: string) => {
+  toggleCached(pin)
+  appendToPinned(pin)
+}
+
 const handleSelectPin = (pin: string) => {
-  optmistic(pin)
-  useFetch(`/api/books/toggle-pin`, {
-    headers: {
-      'Authorization': `${localStorage.getItem('token')}`,
-    },
-    method: 'POST',
-    body: {
-      pin,
-      slug,
-    },
-  })
+  fetchTogglePin({slug, pin}, optmisticUpdate)
 }
 </script>
 
