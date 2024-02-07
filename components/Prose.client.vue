@@ -346,5 +346,5 @@ function createNodes(chunk: string) {
 <template>
   <LeftMenu />
   <FloatPopup />
-  <div id="prose" ref="element" class="font-bookerly prose prose-md prose-slate prose-dark text-slate-300" />
+  <div id="prose" ref="element" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300" />
 </template>
