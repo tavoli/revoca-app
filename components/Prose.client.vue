@@ -32,7 +32,9 @@ const nodeTarget = useState<NodeTarget>('nodeTarget')
 const definitions = useState<PinDefinition[]>('definitions', () => [])
 const currentDefinition = useState<PinDefinition>('currentDefinition')
 const slug = useSlug()
-const cache = useNuxtData(slug)
+const DATA_KEY = factoryDataKeys(slug)
+const pinsCache = useNuxtData(DATA_KEY.PINS)
+const sentencesCache = useNuxtData(DATA_KEY.SENTENCES)
 
 const parser = DOMParser.fromSchema(markSchema)
 const content = document.querySelector('#content') as HTMLElement
@@ -104,13 +106,10 @@ function update(event: DispatchEvent) {
         method: 'POST',
         body,
         onRequest: () => {
-          cache.data.value = {
-            ...cache.data.value,
-            pins: [
-              ...cache.data.value.pins,
-              currentDefinition.value,
-            ],
-          }
+          pinsCache.data.value = [
+            ...pinsCache.data.value,
+            currentDefinition.value
+          ]
         },
       })
       break
@@ -121,7 +120,7 @@ function update(event: DispatchEvent) {
       // TODO: optmistic update directly on useNuxtData to avoid seek for definition at twice (server and local)
 
       // try from server first
-      let definitionFromCache = cache.data.value.pins?.find((pin: any) => pin.pin === selection)
+      let definitionFromCache = pinsCache.data.value?.find((pin: any) => pin.pin === selection)
 
       // try from local cache
       if (!definitionFromCache) {
@@ -175,6 +174,18 @@ function update(event: DispatchEvent) {
             to
           }
         })
+
+        .then((sentence) => {
+          const id = nodeTarget.value.id
+          const index = sentencesCache.data.value.findIndex((s: any) => s.id === id)
+          const newId = Math.floor(Math.random() * 1000) + id
+
+          sentencesCache.data.value.splice(index, 0, {
+            type: 'blockquote',
+            id: newId,
+            sentence,
+          })
+        })
       }
       break
     case 'SIMPLIFY_TEXT':
@@ -207,6 +218,18 @@ function update(event: DispatchEvent) {
             from: fromSimplify + 1,
             to: toSimplify
           }
+        })
+
+        .then((sentence) => {
+          const id = nodeTarget.value.id
+          const index = sentencesCache.data.value.findIndex((s: any) => s.id === id)
+          const newId = Math.floor(Math.random() * 1000) + id
+
+          sentencesCache.data.value.splice(index, 0, {
+            type: 'blockquote',
+            id: newId,
+            sentence,
+          })
         })
       }
       break
@@ -257,6 +280,7 @@ async function aiInfuseStream({ sentence, dispatch, initialOpt }: StreamOptions)
 
   let from = initialOpt.from
   let to = initialOpt.to
+  let fullText = ''
 
   while (true) {
     const { done, value } = await reader.read()
@@ -268,11 +292,14 @@ async function aiInfuseStream({ sentence, dispatch, initialOpt }: StreamOptions)
     const chunkValue = decoder.decode(value);
 
     to = from + chunkValue.length
+    fullText += chunkValue
 
     dispatch(chunkValue, { from, to })
 
     from = to
   }
+
+  return Promise.resolve(fullText)
 }
 
 async function aiSimplifyStream({ sentence, dispatch, initialOpt }: StreamOptions) {
@@ -300,6 +327,7 @@ async function aiSimplifyStream({ sentence, dispatch, initialOpt }: StreamOption
 
   let from = initialOpt.from
   let to = initialOpt.to
+  let fullText = ''
 
   while (true) {
     const { done, value } = await reader.read()
@@ -311,11 +339,14 @@ async function aiSimplifyStream({ sentence, dispatch, initialOpt }: StreamOption
     const chunkValue = decoder.decode(value);
 
     to = from + chunkValue.length
+    fullText += chunkValue
 
     dispatch(chunkValue, { from, to })
 
     from = to
   }
+
+  return Promise.resolve(fullText)
 }
 
 async function getDefinition({ pin, dispatch }: any) {
@@ -324,7 +355,7 @@ async function getDefinition({ pin, dispatch }: any) {
 }
 
 function createNodes(chunk: string) {
-  const pinSet = new Set((cache.data.value.pins as PinDefinition[]).map((pin: PinDefinition) => pin.pin))
+  const pinSet = new Set((pinsCache.data.value).map((pin: PinDefinition) => pin.pin))
 
   const w = (word: string) => word.replace(/[^a-zA-Z]/g, "");
 

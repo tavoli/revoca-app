@@ -7,6 +7,16 @@ const DATA_KEY = factoryDataKeys(slug)
 // TODO login when token is not present
 // TODO save the generated sentence on cache
 
+await useAsyncData(DATA_KEY.PINS,
+  fetchPinsPaginate,
+  {
+    getCachedData(key) {
+      const cache = useNuxtData(key)
+      return cache.data.value
+    },
+  }
+)
+
 const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
   () => fetchSentences(slug),
   {
