@@ -148,10 +148,12 @@ function update(event: DispatchEvent) {
       const from = nodeTarget.value?.from
       const to = nodeTarget.value?.to
 
+      const isBlockquote = view.state.doc.nodeAt(from -1)?.type.name === 'blockquote'
+
       if (from && to) {
         const newLine = markSchema.node('blockquote', null, [
           markSchema.node('paragraph', null, [
-            markSchema.text('\n')
+            markSchema.text(isBlockquote ? ' ' : '\n')
           ]),
         ])
 
@@ -164,7 +166,7 @@ function update(event: DispatchEvent) {
 
           dispatch: (chunk, chunkOpt) => {
             view.dispatch(
-              view.state.tr.insert(chunkOpt.from + 2, createNodes(chunk))
+              view.state.tr.insert(chunkOpt.from + (isBlockquote ? 0 : 1), createNodes(chunk))
             )
           },
 
@@ -179,10 +181,12 @@ function update(event: DispatchEvent) {
       const fromSimplify = nodeTarget.value?.from
       const toSimplify = nodeTarget.value?.to
 
+      const isSBlockquote = view.state.doc.nodeAt(fromSimplify -1)?.type.name === 'blockquote'
+
       if (fromSimplify && toSimplify) {
         const newLine = markSchema.node('blockquote', null, [
           markSchema.node('paragraph', null, [
-            markSchema.text('\n')
+            markSchema.text(isSBlockquote ? ' ' : '\n')
           ]),
         ])
 
@@ -195,7 +199,7 @@ function update(event: DispatchEvent) {
 
           dispatch: (chunk, chunkOpt) => {
             view.dispatch(
-              view.state.tr.insert(chunkOpt.from + 2, createNodes(chunk))
+              view.state.tr.insert(chunkOpt.from + (isSBlockquote ? 0 : 1), createNodes(chunk))
             )
           },
 

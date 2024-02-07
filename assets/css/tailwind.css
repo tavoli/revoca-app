@@ -10,6 +10,10 @@
   .prose strong {
     @apply bg-green-800 text-slate-100;
   }
+
+  .prose :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before {
+    content: none;
+  }
 }
 
 .mode-dark {
