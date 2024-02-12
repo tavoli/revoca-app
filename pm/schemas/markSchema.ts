@@ -29,7 +29,7 @@ export default new Schema({
       group: "block",
       content: "paragraph{1}",
       toDOM() {
-        return ["blockquote", {class: "border-4 border-l-indigo-500 pl-4"}, 0]
+        return ["blockquote", {class: "border-l-green-800 pl-4"}, 0]
       },
       parseDOM: [
         {

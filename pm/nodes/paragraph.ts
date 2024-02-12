@@ -1,6 +1,8 @@
 import {EditorView, type NodeView} from "prosemirror-view"
 import {Node} from "prosemirror-model"
 
+import { useTargetStore } from "~/stores/target"
+
 let isBlinded = false
 
 export default class ParagraphView implements NodeView {
@@ -8,6 +10,7 @@ export default class ParagraphView implements NodeView {
   contentDOM: HTMLElement
   view: EditorView
   node: Node
+  store: ReturnType<typeof useTargetStore> = useTargetStore()
 
   constructor(
     node: Node,
@@ -34,16 +37,12 @@ export default class ParagraphView implements NodeView {
   }
 
   private dispatchPos(pos: number) {
-    this.view.dispatch(
-      this.view.state.tr.setMeta('DISPATCH', {
-        type: 'NODE_TARGET',
-        payload: {
-          from: pos - 1,
-          to: this.view.state.tr.doc.resolve(pos).end(),
-          id: +this.node.attrs.id,
-        }
-      })
-    )
+    this.store.set({
+      node: this.node,
+      from: pos - 1,
+      to: this.view.state.tr.doc.resolve(pos).end(),
+      id: +this.node.attrs.id,
+    })
   }
 
   private popover(pos: number) {

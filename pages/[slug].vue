@@ -30,21 +30,36 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
 
 <template>
   <Body class="mode-dark" />
-  <Head>
-    <link rel="stylesheet" href="/font/bookerly.css" />
-  </Head>
+
   <TopMenu />
+
   <main class="w-4/12 mx-auto">
     <div class="flex gap-y-2 flex-col items-center" v-if="pending">
       <div class="w-full h-48 bg-gray-800 animate-pulse" v-for="i in 10" :key="i" />
     </div>
     <div class="flex gap-y-2 flex-col items-center" v-else>
       <div id="content" class="hidden">
-        <p class="py-4 relative" v-for="s in sentences" :key="s.id" :id="s.id">
-          {{ s.sentence }}
-        </p>
+        <template v-for="s in sentences">
+
+          <blockquote class="border-l-green-800 pl-4" 
+            v-if="s.type === 'quote'" 
+            :id="s.id">
+
+            <p class="py-4">{{ s.sentence }}</p>
+
+          </blockquote>
+
+          <p class="py-4" 
+            v-else 
+            :id="s.id" 
+            :key="s.id">
+            {{ s.sentence }}
+          </p>
+
+        </template>
       </div>
     </div>
+
     <ClientOnly v-if="!pending">
       <Prose />
     </ClientOnly>

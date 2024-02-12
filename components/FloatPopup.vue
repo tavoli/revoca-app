@@ -1,5 +1,8 @@
 <script setup lang="tsx">
-const currentDefinition = useState<PinDefinition>('currentDefinition')
+import { storeToRefs } from 'pinia'
+import {useDefinitionStore} from '~/stores/definition';
+
+const {definition: currentDefinition} = storeToRefs(useDefinitionStore())
 
 const handleNewPin = () => {
   window.view.dispatch(

@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: {enabled: true},
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt'],
   experimental: { payloadExtraction: true },
   app: {
     head: {
@@ -12,7 +12,12 @@ export default defineNuxtConfig({
 
         {href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;700&display=swap', rel: 'stylesheet'},
         {href: 'https://unpkg.com/tippy.js@5/dist/backdrop.css'},
+
+        {href: '/font/bookerly.css', rel: 'stylesheet'},
       ]
     }
-  }
+  },
+  nitro: {
+    preset: 'vercel',
+  },
 })

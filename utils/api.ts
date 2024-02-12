@@ -46,3 +46,69 @@ export const fetchTogglePin = (
     },
   })
 
+interface StreamOptions {
+  fn: string
+  slug: string
+  sentence: string
+  dispatch: (
+    chunk: string,
+    chunkOpt: {
+      from: number, to: number
+    }
+  ) => void
+  initialOpt: {
+    from: number
+    to: number
+  }
+}
+
+export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }: StreamOptions) {
+  const response = await $fetch<any>(`/api/ai/${fn}`, {
+    responseType: "stream",
+    method: "POST",
+    headers: {
+      "Authorization": `${localStorage.getItem('token')}`
+    },
+    body: {
+      sentence,
+      slug,
+    }
+  })
+
+  let from = initialOpt.from
+  let to = initialOpt.to
+  let fullText = ''
+
+  return new Promise((resolve) => {
+    response.pipeTo(
+      new WritableStream({
+        write(chunk) {
+          const decoder = new TextDecoder();
+          const chunkValue = decoder.decode(chunk);
+
+          to = from + chunkValue.length
+          fullText += chunkValue
+
+          dispatch(chunkValue, {from, to})
+
+          from = to
+        },
+        close() {
+          resolve(fullText)
+        },
+      })
+    );
+  })
+}
+
+export const postPin = (body: any, optmisticUpdate: () => void) =>
+  $fetch(`/api/pins`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+    body,
+    onRequest() {
+      optmisticUpdate()
+    },
+  })
