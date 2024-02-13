@@ -11,6 +11,12 @@ export function dispatch(event: DispatchEvent) {
   switch (event.type) {
     case 'PIN':
       viewUtils.postSelection()
+
+      window.view.dispatch(
+        window.view.state.tr.setMeta('DECORATION', {
+          type: 'PIN_SELECTION',
+        })
+      )
       break
     case 'SELECTION':
       targetStore.$patch({ id: event.payload.id })
