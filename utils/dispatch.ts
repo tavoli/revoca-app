@@ -19,8 +19,6 @@ export function dispatch(event: DispatchEvent) {
       )
       break
     case 'SELECTION':
-      targetStore.$patch({ id: event.payload.id })
-
       definitionStore.onSelection(
         event.payload.selection
       )

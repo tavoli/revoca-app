@@ -3,7 +3,6 @@ const route = useRoute()
 
 const slug = route.query.slug as string
 const DATA_KEY = factoryDataKeys(slug)
-const cache = useNuxtData(DATA_KEY.PINS_PINNED)
 
 const pinned = await useLazyAsyncData(DATA_KEY.PINNED,
   () => fetchPinned(slug),
@@ -12,12 +11,9 @@ const pinned = await useLazyAsyncData(DATA_KEY.PINNED,
   }
 )
 
-const {data: pins, pending} = await useLazyAsyncData(DATA_KEY.PINS_PINNED,
+const {data: pins, pending} = await useLazyAsyncData(DATA_KEY.PINS,
   fetchPinsPaginate,
   {
-    getCachedData: (key) => {
-      return useNuxtData(key).data.value
-    },
     transform: (data) => {
       return data.map((pin) => {
         const selected = pinned.data.value?.includes(pin.pin)
@@ -27,16 +23,15 @@ const {data: pins, pending} = await useLazyAsyncData(DATA_KEY.PINS_PINNED,
         }
       })
     },
-    watch: [pinned.data],
   })
 
 const toggleCached = (pin: string) => {
-  const index = cache.data.value?.findIndex((p: any) => p.pin === pin)
+  const index = pins.value?.findIndex((p: any) => p.pin === pin) as number
 
   if (index !== -1) {
-    cache.data.value[index].selected = !cache.data.value[index].selected
-  } else {
-    cache.data.value[index].selected = true
+    if (pins.value?.[index]) {
+      pins.value[index].selected = !pins.value[index].selected
+    }
   }
 }
 

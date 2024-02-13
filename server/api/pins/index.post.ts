@@ -3,7 +3,7 @@ import { z } from 'zod'
 import {insertPin} from '~/server/repositories/pin/pin.repository'
 
 const pinBodySchema = z.object({
-  id: z.number().int().positive(),
+  id: z.union([z.number(), z.string()]),
   pin: z.string().min(1).max(255),
   slug: z.string().min(1),
 })
@@ -27,9 +27,7 @@ const pinBodySchema = z.object({
  *             type: object
  *             properties:
  *               id:
- *                 type: integer
- *                 format: int
- *                 minimum: 1
+ *                 description: The sentence id
  *               slug:
  *                 type: string
  *                 format: string
@@ -99,7 +97,7 @@ export default defineEventHandler(async (event) => {
   const pin = {
     user_id: user.id,
     slug: body.slug,
-    sentence_id: body.id,
+    context: body.id,
     pin: body.pin,
     parts_of_speech: partsOfSpeech || null,
     definitions: definitions || null,

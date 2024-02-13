@@ -4,7 +4,7 @@ export interface PinTable {
   id: Generated<number>,
   user_id: string,
   slug: string,
-  sentence_id: number,
+  context: string | number | null,
   pin: string,
   parts_of_speech?: string | null,
   definitions?: string | null,
@@ -14,4 +14,5 @@ export interface PinTable {
 }
 
 export type Pin = Selectable<PinTable>
+
 export type NewPin = Insertable<PinTable>

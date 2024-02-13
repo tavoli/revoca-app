@@ -46,8 +46,8 @@ export default class ParagraphView implements NodeView {
       node: this.node,
       from: pos - 1,
       to: this.view.state.tr.doc.resolve(pos).end(),
-      id: Number(this.node.attrs.id),
-      parent: Number(this.node.attrs.parent),
+      id: this.node.attrs.id,
+      parent: this.node.attrs.parent,
     })
   }
 
