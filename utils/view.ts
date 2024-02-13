@@ -1,7 +1,7 @@
-import {Node} from "prosemirror-model"
 import markSchema from '~/pm/schemas/markSchema'
 import {fetchAIStream} from './api'
 import {useTargetStore} from '~/stores/target'
+import {nanoid} from "nanoid";
 
 const VIEW_TYPES = {
   SIMPLIFY: 'simplify',
@@ -51,65 +51,48 @@ async function processView(type: string, from: number, to: number) {
     const sentencesCache = useNuxtData(DATA_KEY.SENTENCES);
 
     const target = useTargetStore();
-    const node = window.view.state.doc.nodeAt(from);
     const nodeQuote = window.view.state.doc.nodeAt(from - 1)
     const isQuote = nodeQuote?.type.name === 'blockquote';
 
     target.blind();
 
-    const sentence = await insertSentence({
+    const [sentence, id] = await newLineChunks({
       type,
       from,
       to,
       isQuote,
+      target,
     });
 
-    const index = findSentenceIndex(target, sentencesCache);
-
     const aiSentence = {
-      sentence_id: target.id,
+      parent: target.parent || target.id,
       sentence,
+      id,
     };
 
-    const generatedId = await postAiSentence(aiSentence);
-    const quote = { id: generatedId, sentence, parentId: target.id };
+    await postAiSentence(aiSentence);
+
+    const quote = {
+      id,
+      sentence,
+      parent: target.parent || target.id,
+    };
+
+    insertQuoteAt(quote, sentencesCache);
 
     target.unblind();
-
-    insertQuoteAt(index, quote, sentencesCache);
-    console.log('nodeQuote:', nodeQuote);
-    setNodeId(nodeQuote ?? node, generatedId);
   } catch (error) {
     console.error('Error processing view:', error);
   }
 }
 
-const setNodeId = (node: Node | null, id: number) => {
-  let quote: Node | null = null;
-  if (node) {
-    window.view.state.doc.content.forEach((n, pos) => {
-      if (n === node) {
-        quote = window.view.state.doc.resolve(pos).nodeBefore;
-      }
-    })
+const insertQuoteAt = (newSentence: any, sentences: any) => {
+  const index = sentences.data.value.findIndex((s: any) => s.id === newSentence.parent);
+
+  if (index === -1) {
+    throw new Error('Could not find parent sentence');
   }
 
-  console.log('quote:', quote);
-
-  if (quote) {
-    window.view.state.doc.content.forEach((n, pos) => {
-      if (n === quote) {
-        window.view.dispatch(
-          window.view.state.tr.setNodeMarkup(
-            pos + 1, null, {id}
-          )
-        );
-      }
-    })
-  }
-}
-
-const insertQuoteAt = (index: number, newSentence: any, sentences: any) => {
   if (sentences.data.value[index]) {
     sentences.data.value.splice(index, 0, {
       type: 'quote',
@@ -120,37 +103,32 @@ const insertQuoteAt = (index: number, newSentence: any, sentences: any) => {
   }
 }
 
-const findSentenceIndex = (target: any, sentences: any) => {
-  const index = sentences.data.value.findIndex((s: any) => s.id === target.id);
-
-  if (index === -1) {
-    throw new Error('Could not find sentence');
-  }
-
-  return index;
-}
-
 interface InsertSentenceOptions {
   type: string
   from: number
   to: number
   isQuote: boolean
+  target: any
 }
 
-async function insertSentence({
+async function newLineChunks({
   type,
   from,
   to,
-  isQuote
+  isQuote,
+  target
 }: InsertSentenceOptions) {
+  const id = nanoid(7);
   const newLine = markSchema.node('blockquote', null, [
-    markSchema.node('paragraph', null, [
-      markSchema.text(isQuote ? ' ' : '\n')
+    markSchema.node('paragraph', {
+      id, parent: target.parent || target.id
+    },[
+      markSchema.text('\n')
     ]),
   ]);
 
   window.view.dispatch(
-    window.view.state.tr.insert(from, newLine)
+    window.view.state.tr.insert(isQuote ? from - 1 : from, newLine)
   );
 
   const sentence = window.view.state.doc.textBetween(from, to);
@@ -168,7 +146,7 @@ async function insertSentence({
     initialOpt: {from: from + 1, to}
   });
 
-  return fullSentence;
+  return [fullSentence, id];
 }
 
 function createNodes(chunk: string) {

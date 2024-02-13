@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
 
   return sentences.map((sentence: any) => ({
     id: sentence.ai_id ?? sentence.id,
-    parentId: sentence.ai_id ? sentence.id : null,
+    parent: sentence.ai_id ? sentence.id : null,
     sentence: sentence.sentence,
     type: sentence.ai_id ? 'quote' : 'paragraph',
   }))

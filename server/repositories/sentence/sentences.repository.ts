@@ -1,7 +1,7 @@
 import {Kysely, sql} from "kysely";
 
 import {Database} from "~/server/utils/database";
-import {NewAiSentences, NewSentences} from "./sentences.table";
+import {NewAiSentence, NewSentences} from "./sentences.table";
 
 export async function insertSentences(db: Kysely<Database>, body: NewSentences) {
   return db.insertInto('sentences')
@@ -9,11 +9,10 @@ export async function insertSentences(db: Kysely<Database>, body: NewSentences) 
     .execute();
 }
 
-export async function insertAiSentences(db: Kysely<Database>, body: NewAiSentences) {
+export async function insertAiSentences(db: Kysely<Database>, body: NewAiSentence) {
   return db.insertInto('ai_sentences')
     .values(body)
-    .returning('id')
-    .executeTakeFirstOrThrow();
+    .execute();
 }
 
 export async function getAllInitialSentences(db: Kysely<Database>, slug: string, limit = 30, nextCursor: number | null) {

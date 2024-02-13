@@ -42,12 +42,12 @@ export default class ParagraphView implements NodeView {
   }
 
   private dispatchPos(pos: number) {
-    console.log("dispatching pos", this.node.attrs)
     this.target.set({
       node: this.node,
       from: pos - 1,
       to: this.view.state.tr.doc.resolve(pos).end(),
       id: Number(this.node.attrs.id),
+      parent: Number(this.node.attrs.parent),
     })
   }
 

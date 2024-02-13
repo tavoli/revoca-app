@@ -6,6 +6,7 @@ export interface NodeTarget {
   from: number
   to: number
   id: number
+  parent: number
   isBlinded: boolean
 }
 
@@ -16,6 +17,7 @@ export const useTargetStore = defineStore('target', {
     from: 0,
     to: 0,
     id: 0,
+    parent: 0,
     isBlinded: false
   }),
 

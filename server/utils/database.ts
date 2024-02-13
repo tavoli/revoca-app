@@ -18,10 +18,10 @@ export interface Database {
 
 const dialect = new PostgresDialect({
   pool: new Pool({
-    database: process.env.POSTGRES_DATABASE,
-    host: process.env.POSTGRES_HOST,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.PG_DATABASE,
+    host: process.env.PG_HOST,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
     ssl: true,
   })
 })

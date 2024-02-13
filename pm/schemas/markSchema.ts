@@ -11,14 +11,20 @@ export default new Schema({
         return ["p", {class: "py-4"}, 0]
       },
       attrs: {
-        id: {default: null}
+        id: {
+          default: null,
+        },
+        parent: {
+          default: null,
+        }
       },
       parseDOM: [
         {
           tag: "p",
           getAttrs(dom: HTMLElement | string) {
             return {
-              id: dom instanceof HTMLElement ? dom.id : null,
+              id: dom instanceof HTMLParagraphElement ? dom.id : null,
+              parent: dom instanceof HTMLParagraphElement ? dom.getAttribute("data-parent") : null,
             }
           }
         },

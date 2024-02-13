@@ -11,29 +11,34 @@ const form = useState("form", () => ({
   errors: new Map<string, string>(),
 }))
 
+const isLoading = ref(false)
+
 const onSubmit = async (e: Event) => {
   e.preventDefault();
-  
-  const slug = slugify(form.value.title)
-  const slugaid = `${slug}-${nanoid(7)}`
 
-  const body = {
-    title: form.value.title,
-    imageSrc: form.value.imageSrc,
-    sentences: form.value.sentences.slice(),
-    slug: slugaid,
+  if (isLoading.value) return;
+
+  isLoading.value = true;
+
+  try {
+    const slug = slugify(form.value.title)
+    const slugaid = `${slug}-${nanoid(7)}`
+
+    const body = {
+      title: form.value.title,
+      imageSrc: form.value.imageSrc,
+      sentences: form.value.sentences.slice(),
+      slug: slugaid,
+    }
+
+    await postBook(body)
+
+    router.push({ name: 'config', query: { slug: slugaid } })
+  } catch (error) {
+    console.error(error)
   }
 
-  const response = await $fetch('/api/books', {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `${localStorage.getItem('token')}`,
-    },
-    method: 'POST',
-    body
-  })
-
-  if (response.ok) router.push('/new')
+  isLoading.value = false;
 };
 
 const handleEditor = (values: any) => {
@@ -62,8 +67,11 @@ const handleEditor = (values: any) => {
         <button 
           class="bg-blue-950 text-white font-bold py-2 px-4 rounded" 
           type="submit" 
+          :disabled="isLoading"
+          :class="{ 'bg-gray-500 cursor-not-allowed': isLoading }"
           @click="onSubmit">
           next
+          <span v-if="isLoading" class="animate-pulse ml-2">⏳</span>
         </button>
       </div>
     </header>

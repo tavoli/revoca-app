@@ -125,3 +125,19 @@ export const postAiSentence = async (body: any) => {
   return generatedId
 }
 
+interface NewBook {
+  title: string
+  imageSrc: string
+  sentences: string[]
+  slug: string
+}
+
+export const postBook = (body: NewBook) =>
+  $fetch(`/api/books`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+    body,
+  })
+

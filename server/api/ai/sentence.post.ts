@@ -1,9 +1,11 @@
 import { z } from 'zod'
 import {insertAiSentences} from '~/server/repositories/sentence/sentences.repository'
+import {NewAiSentence} from '~/server/repositories/sentence/sentences.table'
 
 const aiSentenceBodySchema = z.object({
+  id: z.string(),
+  parent: z.number(),
   sentence: z.string(), 
-  sentence_id: z.number(),
 })
 
 /**
@@ -24,15 +26,21 @@ const aiSentenceBodySchema = z.object({
  *           schema:
  *             type: object
  *             properties:
+ *               id:
+ *                 type: string
+ *                 format: string
+ *                 description: The id of the sentence generated on the client
  *               sentence:
  *                 type: string
  *                 format: string
- *               sentence_id:
- *                 type: integer
- *                 format: int
+ *               parent:
+ *                 type: number
+ *                 format: number
+ *                 description: The id of the parent sentence
  *           example:
+ *             id: "zxcvbnm"
  *             sentence: "This is a sentence"
- *             sentence_id: 1
+ *             parent: 123
  *
  *     responses:
  *       '200':
@@ -82,15 +90,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const data: any = {
+  const data: NewAiSentence = {
+    id: body.id,
     sentence: body.sentence,
-    sentence_id: body.sentence_id,
+    sentence_id: body.parent,
     user_id: user.id,
   }
 
   try {
-    const res = await insertAiSentences(db, data)
-    return res.id
+    await insertAiSentences(db, data)
   } catch (error) {
     throw createError({
       message: 'An internal server error occurred',
@@ -98,4 +106,6 @@ export default defineEventHandler(async (event) => {
       statusCode: 500,
     })
   }
+
+  return { ok: true }
 })

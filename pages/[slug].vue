@@ -45,7 +45,7 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
             v-if="s.type === 'quote'" 
             :id="s.id">
 
-            <p class="py-4">{{ s.sentence }}</p>
+            <p class="py-4" :id="s.id" :data-parent="s.parent">{{ s.sentence }}</p>
 
           </blockquote>
 

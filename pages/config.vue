@@ -12,7 +12,7 @@ const pinned = await useLazyAsyncData(DATA_KEY.PINNED,
   }
 )
 
-const {data: pins} = await useLazyAsyncData(DATA_KEY.PINS_PINNED,
+const {data: pins, pending} = await useLazyAsyncData(DATA_KEY.PINS_PINNED,
   fetchPinsPaginate,
   {
     getCachedData: (key) => {
@@ -87,6 +87,15 @@ const handleSelectPin = (pin: string) => {
           </button> 
 
         </div>
+      </div>
+
+      <div v-if="!pending && !pins.length" class="absolute inset-0 flex items-center justify-center">
+        <h1 class="text-2xl font-bold text-center text-gray-200">
+          no pins found
+        </h1>
+        <button class="bg-blue-950 text-white font-bold py-2 px-4 rounded ml-4" @click="$router.push(`/${slug}`)">
+          go to book
+        </button>
       </div>
     </div>
   </div>

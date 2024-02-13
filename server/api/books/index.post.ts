@@ -8,9 +8,6 @@ const bookBodySchema = z.object({
   imageSrc: z.string(),
   sentences: z.array(z.string()),
   slug: z.string(),
-  pins: z.object({
-    ids: z.array(z.number()),
-  }).optional()
 })
 
 /**
@@ -41,20 +38,11 @@ const bookBodySchema = z.object({
  *                   type: string
  *               slug:
  *                 type: string
- *               pins:
- *                 type: object
- *                 properties:
- *                   ids:
- *                     type: array
- *                     items:
- *                       type: number
  *           example:
  *             title: "Sample Title"
  *             imageSrc: "https://example.com/image.jpg"
  *             sentences: ["Sentence 1", "Sentence 2"]
  *             slug: "sample-title"
- *             pins:
- *               ids: [1, 2, 3]
  *     
  *     responses:
  *       '200':
@@ -106,7 +94,7 @@ export default defineEventHandler(async (event) => {
 
   const body = result.data
 
-  db.transaction().execute(async (trx) => {
+  await db.transaction().execute(async (trx) => {
     try {
       const book_id = await insertBook(trx, {
         title: body.title,
@@ -129,20 +117,11 @@ export default defineEventHandler(async (event) => {
 
       await insertSentences(trx, sentences)
 
-      if (body.pins) {
-        const pins = body.pins.ids.map((pin_id: number) => ({
-          book_id,
-          pin_id,
-          user_id: user.id,
-        }))
-
-        await insertBookPin(trx, pins)
-      }
-
       await kv.zadd(
         'titles',
         { member: body.title, score: book_id },
       );
+
     } catch (error) {
       console.error(error)
       throw createError({
