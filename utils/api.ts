@@ -112,3 +112,16 @@ export const postPin = (body: any, optmisticUpdate: () => void) =>
       optmisticUpdate()
     },
   })
+
+export const postAiSentence = async (body: any) => {
+  const generatedId = await $fetch(`/api/ai/sentence`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+    body,
+  })
+
+  return generatedId
+}
+

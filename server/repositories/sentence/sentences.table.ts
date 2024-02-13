@@ -8,4 +8,13 @@ export interface SentencesTable {
   sentence: string,
 }
 
+export interface AiSentencesTable {
+  id: Generated<number>,
+  sentence: string,
+  sentence_id: number,
+  user_id: string,
+}
+
 export type NewSentences = Insertable<Omit<SentencesTable, 'id'>>[];
+
+export type NewAiSentences = Insertable<Omit<AiSentencesTable, 'id'>>[];

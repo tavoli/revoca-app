@@ -2,15 +2,14 @@ import {EditorView, type NodeView} from "prosemirror-view"
 import {Node} from "prosemirror-model"
 
 import { useTargetStore } from "~/stores/target"
-
-let isBlinded = false
+import type {Store} from "pinia"
 
 export default class ParagraphView implements NodeView {
   dom: InstanceType<typeof window.Node>
   contentDOM: HTMLElement
   view: EditorView
   node: Node
-  store: ReturnType<typeof useTargetStore> = useTargetStore()
+  target: Store<"target", ReturnType<typeof useTargetStore>>
 
   constructor(
     node: Node,
@@ -19,6 +18,7 @@ export default class ParagraphView implements NodeView {
     this.dom = this.contentDOM = document.createElement("p")
     this.view = view
     this.node = node
+    this.target = useTargetStore() as Store<"target", ReturnType<typeof useTargetStore>>
 
     this.dom.addEventListener("mouseover", this.mouseover.bind(this))
   }
@@ -26,22 +26,28 @@ export default class ParagraphView implements NodeView {
   setSelection() {
     const hasSelection = 
       this.view.state.selection.from < this.view.state.selection.to
-    isBlinded = hasSelection
+
+    if (hasSelection) {
+      this.target.blind()
+    } else {
+      this.target.unblind()
+    }
   }
 
   private mouseover() {
-    if (isBlinded) return
+    if (this.target.isBlinded) return
     const pos = this.view.posAtDOM(this.dom, 0)
     this.popover(pos)
     this.dispatchPos(pos)
   }
 
   private dispatchPos(pos: number) {
-    this.store.set({
+    console.log("dispatching pos", this.node.attrs)
+    this.target.set({
       node: this.node,
       from: pos - 1,
       to: this.view.state.tr.doc.resolve(pos).end(),
-      id: +this.node.attrs.id,
+      id: Number(this.node.attrs.id),
     })
   }
 

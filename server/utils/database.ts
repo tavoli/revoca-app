@@ -5,7 +5,7 @@ import {UsersTable} from '../repositories/user/user.table'
 import {BooksTable} from '../repositories/book/book.table'
 import {PinTable} from '../repositories/pin/pin.table'
 import {BooksPinsTable} from '../repositories/book/book.table'
-import {SentencesTable} from '../repositories/sentence/sentences.table'
+import {SentencesTable, AiSentencesTable} from '../repositories/sentence/sentences.table'
 
 export interface Database {
   users: UsersTable,
@@ -13,6 +13,7 @@ export interface Database {
   sentences: SentencesTable,
   pins: PinTable,
   books_pins: BooksPinsTable,
+  ai_sentences: AiSentencesTable
 }
 
 const dialect = new PostgresDialect({

@@ -1,11 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import {Node} from "prosemirror-model"
 
-interface NodeTarget {
+export interface NodeTarget {
   node: Node | null
   from: number
   to: number
   id: number
+  isBlinded: boolean
 }
 
 
@@ -15,14 +16,20 @@ export const useTargetStore = defineStore('target', {
     from: 0,
     to: 0,
     id: 0,
+    isBlinded: false
   }),
 
   actions: {
-    set({node, from, to, id}: NodeTarget) {
-      this.node = node
-      this.from = from
-      this.to = to
-      this.id = id
+    set(target: Partial<NodeTarget>) {
+      this.$patch(target)
+    },
+
+    blind() {
+      this.isBlinded = true
+    },
+
+    unblind() {
+      this.isBlinded = false
     }
   }
 })
