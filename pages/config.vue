@@ -82,9 +82,17 @@ const handleSelectPin = (pin: string) => {
           </button> 
 
         </div>
+
+        <div v-if="!pending && pins?.length" class="relative h-48">
+          <div class="absolute bottom-0 inset-x-0 p-4 flex justify-center">
+            <button class="bg-blue-950 text-white font-bold py-2 px-4 rounded w-96" @click="$router.push(`/${slug}`)">
+              go to book
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div v-if="!pending && !pins.length" class="absolute inset-0 flex items-center justify-center">
+      <div v-if="!pending && !pins?.length" class="absolute inset-0 flex items-center justify-center">
         <h1 class="text-2xl font-bold text-center text-gray-200">
           no pins found
         </h1>

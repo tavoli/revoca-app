@@ -17,6 +17,13 @@ await useAsyncData(DATA_KEY.PINS,
   }
 )
 
+await useLazyAsyncData(DATA_KEY.PINNED,
+  () => fetchPinned(slug),
+  {
+    getCachedData: (key) => useNuxtData(key).data.value,
+  }
+)
+
 const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
   () => fetchSentences(slug),
   {

@@ -65,20 +65,13 @@ async function processView(type: string, from: number, to: number) {
     });
 
     const aiSentence = {
-      parent: target.parent || target.id,
+      parent: Number(target.parent || target.id),
       sentence,
       id,
     };
 
-    await postAiSentence(aiSentence);
-
-    const quote = {
-      id,
-      sentence,
-      parent: target.parent || target.id,
-    };
-
-    insertQuoteAt(quote, sentencesCache);
+    postAiSentence(aiSentence);
+    insertQuoteAt(aiSentence, sentencesCache);
 
     target.unblind();
   } catch (error) {
@@ -89,18 +82,16 @@ async function processView(type: string, from: number, to: number) {
 const insertQuoteAt = (newSentence: any, sentences: any) => {
   const index = sentences.data.value.findIndex((s: any) => s.id === newSentence.parent);
 
-  if (index === -1) {
-    throw new Error('Could not find parent sentence');
-  }
+  if (index === -1) return false;
 
   if (sentences.data.value[index]) {
     sentences.data.value.splice(index, 0, {
       type: 'quote',
       ...newSentence,
     });
-  } else {
-    throw new Error('Could not insert quote');
   }
+
+  return true;
 }
 
 interface InsertSentenceOptions {

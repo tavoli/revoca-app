@@ -12,6 +12,7 @@ interface PinDefinition {
 export const useDefinitionStore = defineStore('definition', {
   state: () => ({
     definition: null as PinDefinition | null,
+    definitions: [] as PinDefinition[],
   }),
 
   actions: {
@@ -20,32 +21,23 @@ export const useDefinitionStore = defineStore('definition', {
     },
 
     find(selection: string): Promise<PinDefinition> {
-      const slug = useSlug()
-      const DATA_KEY = factoryDataKeys(slug)
-
-      const pinsCache = useNuxtData(DATA_KEY.PINS)
-      const fromCache = pinsCache.data.value.find(
+      const def = this.definitions.find(
         ({pin}: PinDefinition) => pin === selection
       )
 
-      if (!fromCache) {
+      if (!def) {
         return this.fetch(selection)
       }
 
-      return Promise.resolve(fromCache)
+      return Promise.resolve(def)
     },
 
     onSelection(selection: string) {
       this.find(selection).then((definition) => {
         this.setCurrent(definition)
 
-        const slug = useSlug()
-        const DATA_KEY = factoryDataKeys(slug)
-
-        const pinsCache = useNuxtData(DATA_KEY.PINS)
-
-        pinsCache.data.value = [
-          ...pinsCache.data.value.filter(
+        this.definitions = [
+          ...this.definitions.filter(
             ({pin}: PinDefinition) => pin !== selection
           ),
           definition,

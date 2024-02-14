@@ -7,7 +7,7 @@ import markSchema from '~/pm/schemas/markSchema'
 import ParagraphView from '~/pm/nodes/paragraph'
 import floatPopup from "~/pm/plugins/floatPopup";
 import type {DispatchEvent} from "~/utils/dispatch";
-import pin from "~/pm/plugins/pin";
+import pinOnMount from "~/pm/plugins/pinOnMount";
 
 declare global {
   interface Window {
@@ -23,8 +23,11 @@ const doc = parser.parse(content)
 
 const state = EditorState.create({
   schema: markSchema,
-  plugins: [floatPopup, pin],
-  doc
+  plugins: [
+    floatPopup,
+    pinOnMount
+  ],
+  doc,
 })
 
 const editor = document.createElement('div')
@@ -64,6 +67,32 @@ watch(() => element.value, () => {
       editor.remove()
     }
   }
+})
+
+const slug = useSlug()
+const DATA_KEY = factoryDataKeys(slug)
+
+const pinned = useNuxtData(DATA_KEY.PINNED)
+const pins = useNuxtData(DATA_KEY.PINS)
+
+watch(() => pinned.data.value, (value) => {
+  view.dispatch(
+    view.state.tr.setMeta('SET_STATE', {
+      pinned: value
+    })
+  )
+}, {
+  immediate: true
+})
+
+watch(() => pins.data.value, (value) => {
+  view.dispatch(
+    view.state.tr.setMeta('SET_STATE', {
+      pins: value.map(({pin}: PinDefinition) => pin)
+    })
+  )
+}, {
+  immediate: true
 })
 </script>
 
