@@ -115,7 +115,8 @@ async function generateContentAsStream(sentence: string) {
   };
 
   const prompts = [
-    `- Split the following paragraph into many using \n to break lines:`,
+    `- Split the following paragraph into multiple sentences`,
+    `- Use transitions to make the sentences flow`,
     `\n\n${sentence}`,
   ];
 
