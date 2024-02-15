@@ -6,6 +6,7 @@ import {nanoid} from "nanoid";
 const VIEW_TYPES = {
   SIMPLIFY: 'simplify',
   INFUSE: 'infuse',
+  SPLIT: 'split',
 };
 
 export const viewUtils = {
@@ -15,6 +16,10 @@ export const viewUtils = {
 
   async simplify(from: number, to: number) {
     await processView(VIEW_TYPES.SIMPLIFY, from, to);
+  },
+
+  async split(from: number, to: number) {
+    await processView(VIEW_TYPES.SPLIT, from, to);
   },
 
   async postSelection() {
@@ -109,9 +114,11 @@ async function newLineChunks({
   isQuote,
   target
 }: InsertSentenceOptions) {
+  const tag = type === VIEW_TYPES.SPLIT ? 'pre' : 'paragraph';
   const id = nanoid(7);
+
   const newLine = markSchema.node('blockquote', null, [
-    markSchema.node('paragraph', {
+    markSchema.node(tag, {
       id, parent: target.parent || target.id
     },[
       markSchema.text('\n')
@@ -127,39 +134,16 @@ async function newLineChunks({
     fn: type,
     slug: useSlug(),
     sentence,
-    dispatch: (chunk, chunkOpt) => {
+    dispatch: (chunk, chunkFrom) => {
       window.view.dispatch(
         window.view.state.tr.insert(
-          chunkOpt.from + (isQuote ? 0 : 1), createNodes(chunk)
+          chunkFrom + (isQuote ? 0 : 1), markSchema.text(chunk)
         )
       );
     },
-    initialOpt: {from: from + 1, to}
+
+    from: from + 1
   });
 
   return [fullSentence, id];
 }
-
-function createNodes(chunk: string) {
-  const slug = useSlug()
-  const DATA_KEY = factoryDataKeys(slug)
-  const pinsCache = useNuxtData(DATA_KEY.PINS)
-  const pinSet = new Set((pinsCache.data.value).map((pin: PinDefinition) => pin.pin))
-
-  const w = (word: string) => word.replace(/[^a-zA-Z]/g, "");
-
-  const createMarkedNode = (word: string) => {
-    const trimmedWord = word.trim();
-    if (trimmedWord.length > 0 && pinSet.has(w(trimmedWord))) {
-      return markSchema.text(`${trimmedWord} `).mark([
-        window.view.state.schema.marks.strong.create()
-      ]);
-    }
-
-    return markSchema.text(`${trimmedWord} `);
-  };
-
-  return chunk.split(/\s+/).map(createMarkedNode);
-}
-
-

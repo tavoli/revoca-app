@@ -17,11 +17,14 @@ export function dispatch(event: DispatchEvent) {
         event.payload.selection
       )
       break
-    case 'INFUSE_TEXT':
+    case 'AI_INFUSE_TEXT':
       viewUtils.infuse(targetStore.from, targetStore.to)
       break
-    case 'SIMPLIFY_TEXT':
+    case 'AI_SIMPLIFY_TEXT':
       viewUtils.simplify(targetStore.from, targetStore.to)
+      break
+    case 'AI_SPLIT_TEXT':
+      viewUtils.split(targetStore.from, targetStore.to)
       break
     default:
       window.view.updateState(

@@ -1,4 +1,3 @@
-import {GoogleGenerativeAI} from '@google/generative-ai';
 import { z } from 'zod'
 import chalk from 'chalk';
 

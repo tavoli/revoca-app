@@ -4,14 +4,21 @@ const showContent = ref(false)
 const handleInfuse = () => {
   showContent.value = false
   window.view.dispatch(
-    window.view.state.tr.setMeta('DISPATCH', { type: 'INFUSE_TEXT' })
+    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_INFUSE_TEXT' })
   )
 }
 
 const handleSimplify = () => {
   showContent.value = false
   window.view.dispatch(
-    window.view.state.tr.setMeta('DISPATCH', { type: 'SIMPLIFY_TEXT' })
+    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_SIMPLIFY_TEXT' })
+  )
+}
+
+const handleSplit = () => {
+  showContent.value = false
+  window.view.dispatch(
+    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_SPLIT_TEXT' })
   )
 }
 
@@ -50,6 +57,10 @@ onUnmounted(() => {
 
         <button class="flex items center gap-2 p-1.5 text-sm font-medium text-slate-400 text-left bg-transparent w-full rounded hover:text-slate-300" @click="handleSimplify">
           simplify text
+        </button>
+
+        <button class="flex items center gap-2 p-1.5 text-sm font-medium text-slate-400 text-left bg-transparent w-full rounded hover:text-slate-300" @click="handleSplit">
+          split text
         </button>
       </button>
     </div>

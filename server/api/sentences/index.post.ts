@@ -11,7 +11,7 @@ const aiSentenceBodySchema = z.object({
 /**
  * @openapi
  *
- * /ai/sentence:
+ * /sentence:
  *   post:
  *     security:
  *       - HeaderAuth: []

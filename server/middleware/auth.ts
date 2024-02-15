@@ -12,6 +12,7 @@ const privateRoutes = [
   '/api/ai/infuse',
   '/api/ai/simplify',
   '/api/ai/sentence',
+  '/api/ai/split',
 ]
 
 /**

@@ -52,17 +52,12 @@ interface StreamOptions {
   sentence: string
   dispatch: (
     chunk: string,
-    chunkOpt: {
-      from: number, to: number
-    }
+    chunkFrom: number
   ) => void
-  initialOpt: {
-    from: number
-    to: number
-  }
+  from: number
 }
 
-export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }: StreamOptions) {
+export async function fetchAIStream({ fn, slug, sentence, dispatch, from }: StreamOptions) {
   const response = await $fetch<any>(`/api/ai/${fn}`, {
     responseType: "stream",
     method: "POST",
@@ -75,8 +70,7 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }
     }
   })
 
-  let from = initialOpt.from
-  let to = initialOpt.to
+  let chunkFrom = from
   let fullText = ''
 
   return new Promise((resolve) => {
@@ -86,12 +80,11 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }
           const decoder = new TextDecoder();
           const chunkValue = decoder.decode(chunk);
 
-          to = from + chunkValue.length
           fullText += chunkValue
 
-          dispatch(chunkValue, {from, to})
+          dispatch(chunkValue, chunkFrom)
 
-          from = to
+          chunkFrom = from + chunkValue.length
         },
         close() {
           resolve(fullText)
@@ -114,7 +107,7 @@ export const postPin = (body: any, optmisticUpdate: () => void) =>
   })
 
 export const postAiSentence = async (body: any) => {
-  const generatedId = await $fetch(`/api/ai/sentence`, {
+  const generatedId = await $fetch(`/api/sentences`, {
     method: 'POST',
     headers: {
       'Authorization': `${localStorage.getItem('token')}`,
