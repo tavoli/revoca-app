@@ -115,8 +115,9 @@ async function newLineChunks({
   target
 }: InsertSentenceOptions) {
   const id = nanoid(7);
+  const tag = type === VIEW_TYPES.SPLIT ? 'pre' : 'paragraph';
   const newLine = markSchema.node('blockquote', null, [
-    markSchema.node('pre', {
+    markSchema.node(tag, {
       id, parent: target.parent || target.id
     },[
       markSchema.text('\n')
