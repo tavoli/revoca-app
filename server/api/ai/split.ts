@@ -99,8 +99,7 @@ export default defineEventHandler(async (event) => {
 
 async function generateContentAsStream(sentence: string) {
   const prompts = [
-    `- Split the following paragraph into many`,
-    `- Provide just the text as result`,
+    `- Split the following paragraph into many using \n to break lines:`,
 
     `\n\n${sentence}`,
   ];
