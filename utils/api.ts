@@ -52,12 +52,17 @@ interface StreamOptions {
   sentence: string
   dispatch: (
     chunk: string,
-    chunkFrom: number
+    chunkOpt: {
+      from: number, to: number
+    }
   ) => void
-  from: number
+  initialOpt: {
+    from: number
+    to: number
+  }
 }
 
-export async function fetchAIStream({ fn, slug, sentence, dispatch, from }: StreamOptions) {
+export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }: StreamOptions) {
   const response = await $fetch<any>(`/api/ai/${fn}`, {
     responseType: "stream",
     method: "POST",
@@ -70,7 +75,8 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, from }: Stre
     }
   })
 
-  let chunkFrom = from
+  let from = initialOpt.from
+  let to = initialOpt.to
   let fullText = ''
 
   return new Promise((resolve) => {
@@ -80,11 +86,12 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, from }: Stre
           const decoder = new TextDecoder();
           const chunkValue = decoder.decode(chunk);
 
+          to = from + chunkValue.length
           fullText += chunkValue
 
-          dispatch(chunkValue, chunkFrom)
+          dispatch(chunkValue, {from, to})
 
-          chunkFrom = from + chunkValue.length
+          from = to
         },
         close() {
           resolve(fullText)

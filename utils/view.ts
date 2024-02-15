@@ -114,11 +114,9 @@ async function newLineChunks({
   isQuote,
   target
 }: InsertSentenceOptions) {
-  const tag = type === VIEW_TYPES.SPLIT ? 'pre' : 'paragraph';
   const id = nanoid(7);
-
   const newLine = markSchema.node('blockquote', null, [
-    markSchema.node(tag, {
+    markSchema.node('pre', {
       id, parent: target.parent || target.id
     },[
       markSchema.text('\n')
@@ -134,15 +132,14 @@ async function newLineChunks({
     fn: type,
     slug: useSlug(),
     sentence,
-    dispatch: (chunk, chunkFrom) => {
+    dispatch: (chunk, chunkOpt) => {
       window.view.dispatch(
         window.view.state.tr.insert(
-          chunkFrom + (isQuote ? 0 : 1), markSchema.text(chunk)
+          chunkOpt.from + (isQuote ? 0 : 1), markSchema.text(chunk)
         )
       );
     },
-
-    from: from + 1
+    initialOpt: {from: from + 1, to}
   });
 
   return [fullSentence, id];

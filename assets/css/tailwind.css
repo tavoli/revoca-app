@@ -8,7 +8,7 @@
   }
 
   .prose pre {
-    @apply bg-slate-950 text-slate-300 whitespace-pre-wrap;
+    @apply bg-slate-950 text-slate-300 text-lg whitespace-pre-wrap font-bookerly p-0 m-0;
   }
 
   .prose :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before {
