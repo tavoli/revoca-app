@@ -77,11 +77,20 @@ async function processView(type: string, from: number, to: number) {
 
     postAiSentence(aiSentence);
     insertQuoteAt(aiSentence, sentencesCache);
+    dispatchDecoration();
 
     target.unblind();
   } catch (error) {
     console.error('Error processing view:', error);
   }
+}
+
+function dispatchDecoration() {
+  window.view.dispatch(
+    window.view.state.tr.setMeta('DECORATION', {
+      type: 'LEFT_POPUP',
+    })
+  );
 }
 
 const insertQuoteAt = (newSentence: any, sentences: any) => {
@@ -114,13 +123,16 @@ async function newLineChunks({
   isQuote,
   target
 }: InsertSentenceOptions) {
-  const id = nanoid(7);
   const tag = type === VIEW_TYPES.SPLIT ? 'pre' : 'paragraph';
+  const emptyText = type === VIEW_TYPES.SPLIT ? ' ' : '\n';
+
+  const id = nanoid(7);
+
   const newLine = markSchema.node('blockquote', null, [
     markSchema.node(tag, {
       id, parent: target.parent || target.id
     },[
-      markSchema.text('\n')
+      markSchema.text(emptyText)
     ]),
   ]);
 

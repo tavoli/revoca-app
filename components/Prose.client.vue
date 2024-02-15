@@ -8,6 +8,7 @@ import ParagraphView from '~/pm/nodes/paragraph'
 import floatPopup from "~/pm/plugins/floatPopup";
 import type {DispatchEvent} from "~/utils/dispatch";
 import pinOnMount from "~/pm/plugins/pinOnMount";
+import leftPopup from "~/pm/plugins/leftPopup";
 
 declare global {
   interface Window {
@@ -24,8 +25,9 @@ const doc = parser.parse(content)
 const state = EditorState.create({
   schema: markSchema,
   plugins: [
+    leftPopup,
     floatPopup,
-    pinOnMount
+    pinOnMount,
   ],
   doc,
 })
