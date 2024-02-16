@@ -5,6 +5,7 @@ import {DOMParser} from "prosemirror-model";
 
 import markSchema from '~/pm/schemas/markSchema'
 import ParagraphView from '~/pm/nodes/paragraph'
+import PreView from '~/pm/nodes/pre'
 import floatPopup from "~/pm/plugins/floatPopup";
 import type {DispatchEvent} from "~/utils/dispatch";
 import pinOnMount from "~/pm/plugins/pinOnMount";
@@ -42,7 +43,10 @@ const view = new EditorView(editor, {
   nodeViews: {
     paragraph(node, view) {
       return new ParagraphView(node, view)
-    }
+    },
+    pre(node, view) {
+      return new PreView(node, view)
+    },
   },
 
   dispatchTransaction(transaction) {
