@@ -45,7 +45,7 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
       <div class="w-full h-48 bg-gray-800 animate-pulse" v-for="i in 10" :key="i" />
     </div>
     <div class="flex gap-y-2 flex-col items-center" v-else>
-      <div id="content" class="hidden">
+      <div id="content" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300" ref="element">
         <template v-for="s in sentences">
 
           <blockquote class="border-l-green-800 pl-4" 

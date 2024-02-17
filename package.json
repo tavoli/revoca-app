@@ -51,6 +51,7 @@
     "prosemirror-schema-list": "^1.3.0",
     "prosemirror-state": "^1.4.3",
     "prosemirror-view": "^1.32.7",
+    "quill": "2.0.0-rc.2",
     "swagger-jsdoc": "latest",
     "tippy.js": "^6.3.7",
     "vue-virtual-scroller": "next",

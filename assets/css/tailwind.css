@@ -7,12 +7,29 @@
     @apply text-slate-300;
   }
 
+  .prose p strong {
+    @apply text-green-700;
+  }
+
   .prose pre {
     @apply bg-slate-950 text-slate-300 text-lg whitespace-pre-wrap font-bookerly p-0 m-0;
   }
 
   .prose :where(blockquote p:first-of-type):not(:where([class~="not-prose"],[class~="not-prose"] *))::before {
     content: none;
+  }
+
+  .prose :where(blockquote):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    @apply border-l-4 border-green-800 pl-4 text-slate-300;
+  }
+
+
+  p::selection {
+    @apply bg-slate-900 text-slate-200;
+  }
+
+  blockquote::selection {
+    @apply bg-slate-900 text-slate-200;
   }
 }
 

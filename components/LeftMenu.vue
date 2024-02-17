@@ -1,25 +1,46 @@
 <script setup lang="tsx">
 const showContent = ref(false)
+const slug = useSlug()
 
 const handleInfuse = () => {
-  showContent.value = false
-  window.view.dispatch(
-    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_INFUSE_TEXT' })
-  )
+  generate('infuse') 
 }
 
-const handleSimplify = () => {
-  showContent.value = false
-  window.view.dispatch(
-    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_SIMPLIFY_TEXT' })
-  )
+const handleSimplify = async () => {
+  generate('simplify')
 }
 
 const handleSplit = () => {
-  showContent.value = false
-  window.view.dispatch(
-    window.view.state.tr.setMeta('DISPATCH', { type: 'AI_SPLIT_TEXT' })
-  )
+  generate('split')
+}
+
+
+const generate = async (fn: string) => {
+  const options = {fn, slug}
+
+  const selection = window.quill.getSelection() 
+
+  if (selection) {
+    let index = selection?.index
+    const text = window.quill.getText(selection.index, selection.length)
+    window.quill.insertText(selection.index - 1, '\n', 'api')
+
+    for await (const chunkText of ai({ ...options, text })) {
+      const sentences = chunkText.split('\n')
+
+      for (const sentence of sentences) {
+        if (sentence) {
+          window.quill.insertText(index, sentence, {
+            generated: true,
+          }, 'api')
+          index += sentence.length
+        } else {
+          window.quill.insertText(index, '\n', 'api')
+          index += 1
+        }
+      }
+    }
+  }
 }
 
 const handleClickOutside = (e: MouseEvent) => {

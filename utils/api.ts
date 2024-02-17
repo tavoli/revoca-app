@@ -101,6 +101,42 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }
   })
 }
 
+export async function* ai({ fn, slug, text }: any) {
+  const response = await fetch(`/api/ai/${fn}`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({
+      sentence: text,
+      slug,
+    })
+  });
+
+  if (!response.body) {
+    throw new Error('No response body');
+  }
+
+  const reader = response.body.getReader();
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      // Processing the chunk
+      const decoder = new TextDecoder();
+      const chunkValue = decoder.decode(value);
+
+      // Yielding the processed chunk
+      yield chunkValue;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export const postPin = (body: any, optmisticUpdate: () => void) =>
   $fetch(`/api/pins`, {
     method: 'POST',
