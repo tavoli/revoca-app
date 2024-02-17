@@ -17,7 +17,6 @@ const handleSplit = () => {
   showContent.value = false
 }
 
-
 const generate = async (fn: string) => {
   const options = {fn, slug}
 
@@ -34,6 +33,10 @@ const generate = async (fn: string) => {
       for (const sentence of sentences) {
         if (sentence) {
           window.quill.insertText(index, sentence, 'api')
+          const node = window.quill.getLeaf(index)
+          if (node[0]?.parent.domNode?.tagName === 'P') {
+            node[0]?.parent?.domNode?.classList.add('border-l-4', 'border-green-800', 'pl-4')
+          }
           index += sentence.length
         } else {
           window.quill.insertText(index, '\n', 'api')
