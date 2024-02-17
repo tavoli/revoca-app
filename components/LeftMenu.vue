@@ -4,14 +4,17 @@ const slug = useSlug()
 
 const handleInfuse = () => {
   generate('infuse') 
+  showContent.value = false
 }
 
 const handleSimplify = async () => {
   generate('simplify')
+  showContent.value = false
 }
 
 const handleSplit = () => {
   generate('split')
+  showContent.value = false
 }
 
 
@@ -30,9 +33,7 @@ const generate = async (fn: string) => {
 
       for (const sentence of sentences) {
         if (sentence) {
-          window.quill.insertText(index, sentence, {
-            generated: true,
-          }, 'api')
+          window.quill.insertText(index, sentence, 'api')
           index += sentence.length
         } else {
           window.quill.insertText(index, '\n', 'api')

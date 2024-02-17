@@ -24,11 +24,7 @@
   }
 
 
-  p::selection {
-    @apply bg-slate-900 text-slate-200;
-  }
-
-  blockquote::selection {
+  *::selection {
     @apply bg-slate-900 text-slate-200;
   }
 }

@@ -12,6 +12,7 @@ export class ParagraphBlot extends Block {
 
   constructor(scroll: Scroll, domNode: HTMLElement) {
     super(scroll, domNode);
+
     this.domNode.addEventListener('mouseover', ParagraphBlot.mouseover);
   }
 
@@ -22,6 +23,9 @@ export class ParagraphBlot extends Block {
 
   static mouseover(event: MouseEvent) {
     const p = event.target as HTMLParagraphElement;
+
+    if (p.tagName !== 'P') return;
+
     const rect = p.getBoundingClientRect();
 
     const node = Quill.find(p) as Blot;
