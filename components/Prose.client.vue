@@ -26,10 +26,10 @@ function regex(pins: string[]) {
 }
 
 function scan(delta: Delta) {
-  const results: {index: number, length: number, pinned: boolean}[] = []
+  const results: {index: number, to: number, pinned: boolean}[] = []
 
-  function record(index: number, length: number, pinned = false) {
-    results.push({index, length, pinned})
+  function record(index: number, to: number, pinned = false) {
+    results.push({index, to, pinned})
   }
 
   let retain = 0
@@ -74,7 +74,7 @@ function highlight(delta: Delta) {
   const results = scan(delta)
 
   for (const result of results) {
-    const range = {index: result.index, length: result.length}
+    const range = {index: result.index, length: result.to}
 
     if (result.pinned) {
       window.quill.formatText(range, 'underline', 'green', 'silent')
