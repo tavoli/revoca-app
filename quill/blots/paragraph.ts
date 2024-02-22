@@ -25,6 +25,7 @@ export class ParagraphBlot extends Block {
     const p = event.target as HTMLParagraphElement;
 
     if (p.tagName !== 'P') return;
+    if (!p.textContent) return;
 
     const rect = p.getBoundingClientRect();
 

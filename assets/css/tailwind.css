@@ -23,6 +23,9 @@
     @apply border-l-4 border-green-800 pl-4 text-slate-300;
   }
 
+  .prose :where(h1):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    @apply text-4xl font-bold text-slate-300;
+  }
 
   *::selection {
     @apply bg-slate-900 text-slate-200;

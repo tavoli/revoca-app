@@ -1,12 +1,18 @@
+import {PutObjectCommand} from '@aws-sdk/client-s3'
 import { z } from 'zod'
 
-import {insertBook, insertBookPin} from '~/server/repositories/book/book.repository'
-import {insertSentences} from '~/server/repositories/sentence/sentences.repository'
+import {insertBook} from '~/server/repositories/book/book.repository'
 
 const bookBodySchema = z.object({
   title: z.string(),
-  imageSrc: z.string(),
-  sentences: z.array(z.string()),
+  image: z.object({
+    data: z.string(),
+    type: z.string(),
+  }).optional(),
+  ops: z.array(z.object({
+    insert: z.any(),
+    attributes: z.any().optional(),
+  })),
   slug: z.string(),
 })
 
@@ -30,18 +36,22 @@ const bookBodySchema = z.object({
  *             properties:
  *               title:
  *                 type: string
- *               imageSrc:
- *                 type: string
- *               sentences:
+ *               ops:
  *                 type: array
  *                 items:
- *                   type: string
+ *                   type: object
+ *                   properties:
+ *                     insert:
+ *                       type: string
+ *                       description: The text to insert
+ *                     attributes:
+ *                       type: object
+ *                       description: The attributes of the text
  *               slug:
  *                 type: string
  *           example:
  *             title: "Sample Title"
- *             imageSrc: "https://example.com/image.jpg"
- *             sentences: ["Sentence 1", "Sentence 2"]
+ *             ops: [ { insert: "Sample text" } ]
  *             slug: "sample-title"
  *     
  *     responses:
@@ -96,10 +106,27 @@ export default defineEventHandler(async (event) => {
 
   await db.transaction().execute(async (trx) => {
     try {
+      let imageUrl = 'https://via.placeholder.com/150'
+
+      if (body.image?.data && body.image?.type) {
+        const bufferFile = Buffer.from(body.image.data, 'base64')
+
+        await S3.send(new PutObjectCommand({
+          Bucket: BUCKET_NAME,
+          Key: `images/${body.slug}.${body.image.type}`,
+          Body: bufferFile,
+          ContentType: `image/${body.image.type}`,
+          ACL: 'public-read',
+        }))
+
+        imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/images/${body.slug}.${body.image.type}`
+      }
+
+      
       const book_id = await insertBook(trx, {
         title: body.title,
         slug: body.slug,
-        image_url: body.imageSrc,
+        image_url: imageUrl,
         user_id: user.id,
       })
 
@@ -110,18 +137,19 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      const sentences = body.sentences.map((sentence: string) => ({
-        book_id,
-        sentence,
+      await S3.send(new PutObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: `books/${body.slug}.json`,
+        Body: JSON.stringify(body.ops),
+        ContentType: 'application/json',
+        ACL: 'public-read',
       }))
 
-      await insertSentences(trx, sentences)
 
       await kv.zadd(
         'titles',
         { member: body.title, score: book_id },
       );
-
     } catch (error) {
       console.error(error)
       throw createError({

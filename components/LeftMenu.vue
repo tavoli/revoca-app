@@ -1,54 +1,29 @@
 <script setup lang="tsx">
 const showContent = ref(false)
-const slug = useSlug()
+
+const cls = [
+  'border-l-4',
+  'pl-4'
+]
 
 const handleInfuse = () => {
-  generate('infuse') 
+  processTextCommand('infuse', [...cls, 'border-green-900'])
   showContent.value = false
 }
 
 const handleSimplify = async () => {
-  generate('simplify')
+  processTextCommand('simplify', [...cls, 'border-green-700'])
   showContent.value = false
 }
 
-const handleSplit = () => {
-  generate('split')
+const handleSplit = async () => {
   showContent.value = false
-}
-
-const generate = async (fn: string) => {
-  const options = {fn, slug}
-
-  const selection = window.quill.getSelection() 
-
-  if (selection) {
-    let index = selection?.index
-    const text = window.quill.getText(selection.index, selection.length)
-    window.quill.insertText(selection.index - 1, '\n', 'api')
-
-    for await (const chunkText of ai({ ...options, text })) {
-      const sentences = chunkText.split('\n')
-
-      for (const sentence of sentences) {
-        if (sentence) {
-          window.quill.insertText(index, sentence, 'api')
-          const node = window.quill.getLeaf(index)
-          if (node[0]?.parent.domNode?.tagName === 'P') {
-            node[0]?.parent?.domNode?.classList.add('border-l-4', 'border-green-800', 'pl-4')
-          }
-          index += sentence.length
-        } else {
-          window.quill.insertText(index, '\n', 'api')
-          index += 1
-        }
-      }
-    }
-  }
+  processTextCommand('split', [...cls, 'border-green-500'])
 }
 
 const handleClickOutside = (e: MouseEvent) => {
   const target = e.target as HTMLElement
+
   if (!target.closest('#leftMenu')) {
     showContent.value = false
   }

@@ -25,7 +25,7 @@ await useLazyAsyncData(DATA_KEY.PINNED,
 )
 
 const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
-  () => fetchSentences(slug),
+  () => fetchBook(slug),
   {
     getCachedData(key) {
       const cache = useNuxtData(key)
@@ -44,31 +44,13 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     <div class="flex gap-y-2 flex-col items-center" v-if="pending">
       <div class="w-full h-48 bg-gray-800 animate-pulse" v-for="i in 10" :key="i" />
     </div>
+
     <div class="flex gap-y-2 flex-col items-center" v-else>
-      <div id="content" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300" ref="element">
-        <template v-for="s in sentences">
-
-          <blockquote class="border-l-green-800 pl-4" 
-            v-if="s.type === 'quote'" 
-            :id="s.id">
-
-            <p class="py-4" :id="s.id" :data-parent="s.parent">{{ s.sentence }}</p>
-
-          </blockquote>
-
-          <p class="py-4" 
-            v-else 
-            :id="s.id" 
-            :key="s.id">
-            {{ s.sentence }}
-          </p>
-
-        </template>
-      </div>
+      <div id="content" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300" />
     </div>
 
     <ClientOnly v-if="!pending">
-      <Prose />
+      <Prose :sentences="sentences" />
     </ClientOnly>
   </main>
 </template>

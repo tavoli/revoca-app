@@ -3,12 +3,9 @@ import { nanoid } from 'nanoid';
 
 const router = useRouter()
 
-const form = useState("form", () => ({
+const form = useState(() => ({
   title: '',
-  rawText: '',
-  imageSrc: '',
-  sentences: [],
-  errors: new Map<string, string>(),
+  ops: [],
 }))
 
 const isLoading = ref(false)
@@ -26,14 +23,32 @@ const onSubmit = async (e: Event) => {
 
     const body = {
       title: form.value.title,
-      imageSrc: form.value.imageSrc,
-      sentences: form.value.sentences.slice(),
+      ops: form.value.ops,
       slug: slugaid,
     }
 
-    await postBook(body)
+    const withImage: any = form.value.ops.find((op: any) => op?.insert.image)
 
-    router.push({ name: 'config', query: { slug: slugaid } })
+    if (withImage) {
+      const imageBase = withImage.insert.image as string
+      const type = imageBase.split(';')[0].split('/')[1]
+      const data = imageBase.split(',')[1]
+
+      Object.assign(body, {
+        ops: form.value.ops.filter((op: any) => !op.insert?.image),
+        image: {
+          type,
+          data
+        },
+      })
+    }
+
+    postBook(body)
+
+    router.push({
+      name: 'config',
+      query: {slug: slugaid}
+    })
   } catch (error) {
     console.error(error)
   }
@@ -42,17 +57,8 @@ const onSubmit = async (e: Event) => {
 };
 
 const handleEditor = (values: any) => {
-  if (!values) return;
-  console.log(values)
-  form.value.title = values.content?.[0].content?.[0].text
-  form.value.imageSrc = values.content?.[1]?.attrs?.src
-  const startParagraph = values.content.findIndex(
-    (sentence: any) => sentence.type === "paragraph"
-  )
-  form.value.sentences = values.content
-    .slice(startParagraph)
-    .map((value: any) => value.content?.[0].text)
-    .filter(Boolean)
+  form.value.ops = values.ops
+  form.value.title = values.ops[0].insert
 }
 </script>
 
@@ -75,8 +81,21 @@ const handleEditor = (values: any) => {
         </button>
       </div>
     </header>
-    <form class="w-10/12 mt-8 mx-auto">
-     <Editor v-on:change="handleEditor" />
-    </form>
+    <div id="editor" class="w-10/12 mt-8 mx-auto font-bookerly prose text-slate-300">
+      <h1 class="text-2xl font-bold text-center">
+        write the title of the book 
+      </h1>
+      <img 
+        class="w-10/12 mx-auto my-4" 
+        src="https://via.placeholder.com/150" 
+        alt="book cover" 
+      />
+      <p>
+        write your story...
+      </p>
+    </div>
+    <ClientOnly>
+      <Editor @change="handleEditor" />
+    </ClientOnly>
   </main>
 </template>

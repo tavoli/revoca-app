@@ -1,3 +1,5 @@
+import type {Op} from "quill/core";
+
 export const fetchPinsPaginate = () => 
   $fetch(`/api/pins/paginate`, {
     query: {
@@ -17,8 +19,8 @@ export const fetchPinned = (slug: string) =>
   })
   .catch(() => []);
 
-export const fetchSentences = (slug: string) =>
-  $fetch(`/api/sentences`, {
+export const fetchBook = (slug: string) =>
+  $fetch(`/api/books`, {
     query: {
       s: slug,
     },
@@ -162,10 +164,9 @@ export const postAiSentence = async (body: any) => {
 }
 
 interface NewBook {
-  title: string
-  imageSrc: string
-  sentences: string[]
+  ops: Op[]
   slug: string
+  title: string
 }
 
 export const postBook = (body: NewBook) =>
