@@ -119,7 +119,7 @@ export default defineEventHandler(async (event) => {
           ACL: 'public-read',
         }))
 
-        imageUrl = `https://${BUCKET_NAME}.s3.amazonaws.com/images/${body.slug}.${body.image.type}`
+        imageUrl = `https://pub-a386a4298cf14419bb7b676a09551997.r2.dev/images/${body.slug}.${body.image.type}`
       }
 
       

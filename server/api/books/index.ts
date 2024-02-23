@@ -64,14 +64,21 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const file = await S3.send(new GetObjectCommand({
-    Bucket: BUCKET_NAME,
-    Key: `books/${query.data.s}.json`,
-  }))
+  try {
+    const file = await S3.send(new GetObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: `books/${query.data.s}.json`,
+    }))
 
-  const body = await streamToString(file.Body)
+    const body = await streamToString(file.Body)
 
-  return JSON.parse(body)
+    return JSON.parse(body)
+  } catch (error) {
+    throw createError({
+      status: 500,
+      data: error,
+    })
+  }
 })
 
 async function streamToString(stream: any) {
