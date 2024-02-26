@@ -103,7 +103,7 @@ export async function fetchAIStream({ fn, slug, sentence, dispatch, initialOpt }
   })
 }
 
-export async function* ai({ fn, slug, text }: any) {
+export async function* aiSentence({ fn, slug, text }: any) {
   const response = await fetch(`/api/ai/${fn}`, {
     method: "POST",
     headers: {
@@ -113,6 +113,42 @@ export async function* ai({ fn, slug, text }: any) {
     body: JSON.stringify({
       sentence: text,
       slug,
+    })
+  });
+
+  if (!response.body) {
+    throw new Error('No response body');
+  }
+
+  const reader = response.body.getReader();
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      // Processing the chunk
+      const decoder = new TextDecoder();
+      const chunkValue = decoder.decode(value);
+
+      // Yielding the processed chunk
+      yield chunkValue;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+export async function* aiPrompt({ prompt, context }: any) {
+  const response = await fetch(`/api/ai/definition`, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": `${localStorage.getItem('token')}`
+    },
+    body: JSON.stringify({
+      prompt,
+      context,
     })
   });
 

@@ -6,6 +6,8 @@ import type {Bounds} from 'quill/core/selection';
 
 const Block = Quill.import('blots/block') as typeof BlockType;
 
+let counter = 0;
+
 export class ParagraphBlot extends Block {
   static blotName = 'block';
   static tagName = 'p';
@@ -14,11 +16,36 @@ export class ParagraphBlot extends Block {
     super(scroll, domNode);
 
     this.domNode.addEventListener('mouseover', ParagraphBlot.mouseover);
+    this.domNode.addEventListener('mouseup', ParagraphBlot.mouseclick);
+    this.domNode.addEventListener('mousedown', ParagraphBlot.mouseclick);
   }
 
   static create() {
     const node = super.create();
     return node;
+  }
+
+  static mouseclick(event: MouseEvent) {
+    const p = event.target as HTMLParagraphElement;
+
+    if (p.tagName !== 'P') return;
+    if (!p.textContent) return;
+
+    counter += 1;
+
+    if (counter < 2) {
+      return;
+    }
+
+    const selection = window.quill.getSelection();
+    if (selection) {
+      // mouse click will be the bounds
+      const bounds = window.quill.getBounds(selection.index) as Bounds;
+      // TODO - improve left bound
+      ParagraphBlot.floatPopup({...bounds, left: event.x});
+
+      counter = 0;
+    }
   }
 
   static mouseover(event: MouseEvent) {
@@ -33,7 +60,7 @@ export class ParagraphBlot extends Block {
     const index = window.quill.getIndex(node);
     const bounds = window.quill.getBounds(index) as Bounds
 
-    window.quill.setSelection(index, p.textContent?.length, 'silent');
+    // window.quill.setSelection(index, p.textContent?.length, 'silent');
     
     ParagraphBlot.leftPopup({top: bounds.top, left: rect.left});
   }
@@ -43,6 +70,14 @@ export class ParagraphBlot extends Block {
     menu.style.display = "block";
     menu.style.top = `${bounds.top + 40}px`;
     menu.style.left = `${bounds.left - 40}px`;
+  }
+
+  static floatPopup(bounds: any) {
+    const menu = document.querySelector("#floatMenu") as HTMLElement
+    menu.classList.remove("hidden");
+    menu.style.display = "block";
+    menu.style.top = `${bounds.top + 70}px`;
+    menu.style.left = `${bounds.left - 0}px`;
   }
 }
 

@@ -20,20 +20,20 @@ export const useDefinitionStore = defineStore('definition', {
       this.definition = definition
     },
 
-    find(selection: string): Promise<PinDefinition> {
+    find(selection: string, context: string): Promise<PinDefinition> {
       const def = this.definitions.find(
         ({pin}: PinDefinition) => pin === selection
       )
 
       if (!def) {
-        return this.fetch(selection)
+        return this.fetch(selection, context)
       }
 
       return Promise.resolve(def)
     },
 
-    onSelection(selection: string) {
-      this.find(selection).then((definition) => {
+    onSelection(selection: string, context: string) {
+      this.find(selection, context).then((definition) => {
         this.setCurrent(definition)
 
         this.definitions = [
@@ -45,8 +45,8 @@ export const useDefinitionStore = defineStore('definition', {
       })
     },
 
-    async fetch(pin: string): Promise<PinDefinition> {
-      const qs = new URLSearchParams({pin})
+    async fetch(pin: string, context: string): Promise<PinDefinition> {
+      const qs = new URLSearchParams({pin, context})
       const res = await fetch(`/api/definition?${qs}`)
       const data = await res.json()
       return data

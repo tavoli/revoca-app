@@ -15,7 +15,7 @@ export const processTextCommand = async (slug: string, command: string, nodeClas
 
     let chunks = ''
 
-    for await (const chunkText of ai({ ...options, text })) {
+    for await (const chunkText of aiSentence({ ...options, text })) {
       for (const sentence of chunkText.split('\n')) {
         if (sentence) {
           window.quill.insertText(index, sentence, 'api')

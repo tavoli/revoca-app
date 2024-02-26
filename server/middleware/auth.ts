@@ -13,6 +13,7 @@ const privateRoutes = [
   '/api/ai/simplify',
   '/api/ai/sentence',
   '/api/ai/split',
+  '/api/ai/definition',
 ]
 
 /**
