@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 const showContent = ref(false)
+const slug = useSlug()
 
 const cls = [
   'border-l-4',
@@ -7,18 +8,18 @@ const cls = [
 ]
 
 const handleInfuse = () => {
-  processTextCommand('infuse', [...cls, 'border-green-900'])
+  processTextCommand(slug, 'infuse', [...cls, 'border-green-900'])
   showContent.value = false
 }
 
 const handleSimplify = async () => {
-  processTextCommand('simplify', [...cls, 'border-green-700'])
+  processTextCommand(slug, 'simplify', [...cls, 'border-green-700'])
   showContent.value = false
 }
 
 const handleSplit = async () => {
   showContent.value = false
-  processTextCommand('split', [...cls, 'border-green-500'])
+  processTextCommand(slug, 'split', [...cls, 'border-green-500'])
 }
 
 const handleClickOutside = (e: MouseEvent) => {

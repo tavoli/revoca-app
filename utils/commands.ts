@@ -1,8 +1,6 @@
-const slug = useSlug()
-
-export const processTextCommand = async (command: string, nodeClassList: string[]) => {
+export const processTextCommand = async (slug: string, command: string, nodeClassList: string[]) => {
   if (command === 'split') {
-    return processSplit(nodeClassList)
+    return processSplit(slug, nodeClassList)
   }
 
   const options = {fn: command, slug}
@@ -31,11 +29,11 @@ export const processTextCommand = async (command: string, nodeClassList: string[
       }
     }
 
-    highlightInserted(selection.index, chunks.length + 1)
+    highlightInserted(slug, selection.index, chunks.length + 1)
   }
 }
 
-const processSplit = async (nodeClassList: string[]) => {
+const processSplit = async (slug: string, nodeClassList: string[]) => {
   const selection = window.quill.getSelection()
 
   if (selection) {
@@ -59,11 +57,11 @@ const processSplit = async (nodeClassList: string[]) => {
       }
     }
 
-    highlightInserted(selection.index, text.length + 1)
+    highlightInserted(slug, selection.index, text.length + 1)
   }
 }
 
-const highlightInserted = (index: number, length: number) => {
+const highlightInserted = (slug: string, index: number, length: number) => {
   const DATA_KEY = factoryDataKeys(slug)
 
   const pinned = useNuxtData(DATA_KEY.PINNED).data.value
