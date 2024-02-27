@@ -6,7 +6,21 @@ const handleNewPin = () => {
  
 }
 
-window.quill.on('selection-change', (range) => {
+const handleClose = () => {
+  closeMenu()
+}
+
+const closeMenu = () => {
+  const el = document.getElementById('floatMenu')
+  if (el) {
+    el.classList.add('hidden')
+    el.style.left = '-9999px'
+    el.style.top = '-9999px'
+    el.style.display = 'none'
+  }
+}
+
+const handleSelection = (range: { index: number; length: number }) => {
   if (!range) return;
 
   const updateSelectionContext = async (prompt: string, start: number, len: number) => {
@@ -22,34 +36,21 @@ window.quill.on('selection-change', (range) => {
     }
   };
 
-  let prompt, start, len;
-
-  if (range.length === 0) {
-    start = range.index;
-    let end = start;
-    
-    while (start > 0 && isalnum(window.quill.getText(start - 1, 1))) start--;
-    while (isalnum(window.quill.getText(end, 1))) end++;
-    
-    len = end - start;
-    prompt = window.quill.getText(start, len);
-  } else {
-    prompt = window.quill.getText(range.index, range.length);
-    start = range.index;
-    len = range.length;
+  if (range.length > 0) {
+    const prompt = window.quill.getText(range.index, range.length);
+    updateSelectionContext(prompt, range.index, range.length);
   }
-
-  updateSelectionContext(prompt, start, len);
-});
-
-function isalnum(str: string) {
-  return /^[a-zA-Z0-9]*$/.test(str);
 }
+
+window.quill.on('selection-change', handleSelection)
+
+onUnmounted(() => {
+  window.quill.off('selection-change', handleSelection)
+})
 </script>
 
 <template>
-  <div id="floatMenu" class="absolute z-10 font-sans hidden">
-
+  <div id="floatMenu" class="absolute z-10 font-sans">
     <div class="absolute">
       <div class="w-96 h-36 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
 
@@ -63,8 +64,10 @@ function isalnum(str: string) {
           <button @click="handleNewPin" class="btn btn-xs btn-secondary">
             pin +
           </button>
+          <button @click="handleClose" class="btn btn-xs btn-secondary float-right text-red-500">
+            close
+          </button>
         </footer>
-
       </div>
     </div>
 

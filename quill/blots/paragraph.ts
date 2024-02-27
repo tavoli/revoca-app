@@ -38,13 +38,18 @@ export class ParagraphBlot extends Block {
     }
 
     const selection = window.quill.getSelection();
-    if (selection) {
+    if (selection?.index && selection.length) {
       // mouse click will be the bounds
       const bounds = window.quill.getBounds(selection.index) as Bounds;
       // TODO - improve left bound
       ParagraphBlot.floatPopup({...bounds, left: event.x});
 
       counter = 0;
+    }
+
+    if (!selection?.length) {
+      counter = 0;
+      ParagraphBlot.hidePopup();
     }
   }
 
@@ -60,7 +65,11 @@ export class ParagraphBlot extends Block {
     const index = window.quill.getIndex(node);
     const bounds = window.quill.getBounds(index) as Bounds
 
-    // window.quill.setSelection(index, p.textContent?.length, 'silent');
+    const dispatch = new CustomEvent('virtual-selection', {
+      detail: { index, length: p.textContent.length }
+    });
+
+    window.dispatchEvent(dispatch);
     
     ParagraphBlot.leftPopup({top: bounds.top, left: rect.left});
   }
@@ -74,10 +83,14 @@ export class ParagraphBlot extends Block {
 
   static floatPopup(bounds: any) {
     const menu = document.querySelector("#floatMenu") as HTMLElement
-    menu.classList.remove("hidden");
     menu.style.display = "block";
     menu.style.top = `${bounds.top + 70}px`;
     menu.style.left = `${bounds.left - 0}px`;
+  }
+
+  static hidePopup() {
+    const menu = document.querySelector("#floatMenu") as HTMLElement
+    menu.style.display = "none";
   }
 }
 

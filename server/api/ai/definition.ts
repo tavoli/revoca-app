@@ -172,7 +172,7 @@ async function OpenAIGenerateContentAsStream({ prompt, context }: DefinitionRequ
   console.log(chalk.green('[OpenAI] Generating content as stream...'));
 
   const payload: OpenAIStreamPayload = {
-    model: 'gpt-4-turbo-preview',
+    model: 'gpt-3.5-turbo',
     messages: [
       {
         role: UserRole.SYSTEM,

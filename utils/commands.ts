@@ -1,10 +1,11 @@
-export const processTextCommand = async (slug: string, command: string, nodeClassList: string[]) => {
+import type {Range} from "quill/core/selection"
+
+export const processTextCommand = async (slug: string, selection: Range, command: string, nodeClassList: string[]) => {
   if (command === 'split') {
     return processSplit(slug, nodeClassList)
   }
 
   const options = {fn: command, slug}
-  const selection = window.quill.getSelection() 
 
   if (selection) {
     let index = selection?.index

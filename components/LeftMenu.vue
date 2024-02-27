@@ -1,6 +1,15 @@
 <script setup lang="tsx">
+import {Range} from 'quill/core/selection';
+
 const showContent = ref(false)
 const slug = useSlug()
+const selection = ref<Range>()
+
+const onSelection = (e: any) => {
+  const { detail } = e
+  const { index, length } = detail
+  selection.value = { index, length } as Range
+}
 
 const cls = [
   'border-l-4',
@@ -8,18 +17,36 @@ const cls = [
 ]
 
 const handleInfuse = () => {
-  processTextCommand(slug, 'infuse', [...cls, 'border-green-900'])
+  processTextCommand(
+    slug,
+    selection.value as Range,
+    'infuse',
+    [...cls, 'border-green-900']
+  )
+
   showContent.value = false
 }
 
 const handleSimplify = async () => {
-  processTextCommand(slug, 'simplify', [...cls, 'border-green-700'])
+  processTextCommand(
+    slug,
+    selection.value as Range,
+    'simplify',
+    [...cls, 'border-green-700']
+  )
+
   showContent.value = false
 }
 
 const handleSplit = async () => {
   showContent.value = false
-  processTextCommand(slug, 'split', [...cls, 'border-green-500'])
+
+  processTextCommand(
+    slug,
+    selection.value as Range,
+    'split',
+    [...cls, 'border-green-500']
+  )
 }
 
 const handleClickOutside = (e: MouseEvent) => {
@@ -30,10 +57,13 @@ const handleClickOutside = (e: MouseEvent) => {
   }
 }
 
+window.addEventListener('virtual-selection', onSelection)
+
 window.addEventListener('click', handleClickOutside)
 
 onUnmounted(() => {
   window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('virtual-selection', onSelection)
 })
 </script>
 
