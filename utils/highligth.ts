@@ -45,10 +45,7 @@ export function highlight(delta: Delta, retain: number, pins: string[], pinned: 
   for (const result of results) {
     const range = {index: result.index, length: result.to}
     if (result.pinned) {
-      window.quill.formatText(range.index as any, range.length as any, {
-        underline: true,
-        color: 'green',
-      })
+      window.quill.formatText(range, 'underline', 'api')
     } else {
       window.quill.formatText(range, 'underline', 'api')
     }

@@ -1,28 +1,9 @@
-<script setup lang="tsx">
-const route = useRoute()
-
-const slug = route.params.slug as string
+<script setup lang="ts">
+const slug = useSlug()
 const DATA_KEY = factoryDataKeys(slug)
 
 // TODO login when token is not present
 // TODO save the generated sentence on cache
-
-await useAsyncData(DATA_KEY.PINS,
-  fetchPinsPaginate,
-  {
-    getCachedData(key) {
-      const cache = useNuxtData(key)
-      return cache.data.value
-    },
-  }
-)
-
-await useLazyAsyncData(DATA_KEY.PINNED,
-  () => fetchPinned(slug),
-  {
-    getCachedData: (key) => useNuxtData(key).data.value,
-  }
-)
 
 const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
   () => fetchBook(slug),
@@ -56,6 +37,7 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     <ClientOnly v-if="!pending">
       <ScrollRestorer />
       <Prose />
+      <HighlightPins />
     </ClientOnly>
   </main>
 </template>

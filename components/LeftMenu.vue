@@ -1,4 +1,4 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import {Range} from 'quill/core/selection';
 
 const showContent = ref(false)
