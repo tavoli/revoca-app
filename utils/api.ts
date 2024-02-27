@@ -175,16 +175,13 @@ export async function* aiPrompt({ prompt, context }: any) {
   }
 }
 
-export const postPin = (body: any, optmisticUpdate: () => void) =>
+export const postPin = (body: any) =>
   $fetch(`/api/pins`, {
     method: 'POST',
     headers: {
       'Authorization': `${localStorage.getItem('token')}`,
     },
     body,
-    onRequest() {
-      optmisticUpdate()
-    },
   })
 
 export const postAiSentence = async (body: any) => {

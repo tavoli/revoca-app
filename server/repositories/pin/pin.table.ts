@@ -4,11 +4,7 @@ export interface PinTable {
   id: Generated<number>,
   user_id: string,
   slug: string,
-  context: string | number | null,
   pin: string,
-  parts_of_speech?: string | null,
-  definitions?: string | null,
-  synonyms?: string | null,
   is_active: ColumnType<boolean, boolean | undefined, boolean>,
   created_at: ColumnType<Date, string | undefined, never>,
 }

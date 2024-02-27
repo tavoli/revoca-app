@@ -15,7 +15,7 @@ export function paginatePins(
   limit: number = 10
 ) {
   return db.selectFrom('pins')
-    .select(['id', 'pin', 'synonyms', 'definitions', 'parts_of_speech'])
+    .select(['id', 'pin'])
     .where('id', '>', nextCursor)
     .where('user_id', '=', userId)
     .limit(limit)

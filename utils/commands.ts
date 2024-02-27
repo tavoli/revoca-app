@@ -2,7 +2,7 @@ import type {Range} from "quill/core/selection"
 
 export const processTextCommand = async (slug: string, selection: Range, command: string, nodeClassList: string[]) => {
   if (command === 'split') {
-    return processSplit(slug, nodeClassList)
+    return processSplit(slug, selection, nodeClassList)
   }
 
   const options = {fn: command, slug}
@@ -34,32 +34,28 @@ export const processTextCommand = async (slug: string, selection: Range, command
   }
 }
 
-const processSplit = async (slug: string, nodeClassList: string[]) => {
-  const selection = window.quill.getSelection()
+const processSplit = async (slug: string, selection: Range, nodeClassList: string[]) => {
+  let index = selection?.index
+  const text = window.quill.getText(selection.index, selection.length)
 
-  if (selection) {
-    let index = selection?.index
-    const text = window.quill.getText(selection.index, selection.length)
+  insertBlankLine(selection.index)
+  const sentences = splitText(text) 
 
-    insertBlankLine(selection.index)
-    const sentences = splitText(text) 
+  for (const sentence of sentences) {
+    borderNode(index, nodeClassList)
+    
+    const text = await sentence
 
-    for (const sentence of sentences) {
-      borderNode(index, nodeClassList)
-      
-      const text = await sentence
+    window.quill.insertText(index, text, 'api')
+    index += text.length
 
-      window.quill.insertText(index, text, 'api')
-      index += text.length
-
-      if (sentence !== sentences[sentences.length - 1]) {
-        insertBlankLine(index)
-        index += 1
-      }
+    if (sentence !== sentences[sentences.length - 1]) {
+      insertBlankLine(index)
+      index += 1
     }
-
-    highlightInserted(slug, selection.index, text.length + 1)
   }
+
+  highlightInserted(slug, selection.index, text.length + 1)
 }
 
 const highlightInserted = (slug: string, index: number, length: number) => {

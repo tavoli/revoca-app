@@ -26,11 +26,6 @@ export class ParagraphBlot extends Block {
   }
 
   static mouseclick(event: MouseEvent) {
-    const p = event.target as HTMLParagraphElement;
-
-    if (p.tagName !== 'P') return;
-    if (!p.textContent) return;
-
     counter += 1;
 
     if (counter < 2) {

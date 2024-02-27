@@ -3,7 +3,6 @@ import { z } from 'zod'
 import {insertPin} from '~/server/repositories/pin/pin.repository'
 
 const pinBodySchema = z.object({
-  id: z.union([z.number(), z.string()]),
   pin: z.string().min(1).max(255),
   slug: z.string().min(1),
 })
@@ -26,8 +25,6 @@ const pinBodySchema = z.object({
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 description: The sentence id
  *               slug:
  *                 type: string
  *                 format: string
@@ -89,21 +86,11 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const meanings = await dictionary(body.pin)
-  const partsOfSpeech = meanings.partsOfSpeech.join('\n')
-  const definitions = meanings.definitions.join('\n')
-  const synonyms = meanings.synonyms.join('\n')
-
   const pin = {
     user_id: user.id,
     slug: body.slug,
-    context: body.id,
     pin: body.pin,
-    parts_of_speech: partsOfSpeech || null,
-    definitions: definitions || null,
-    synonyms: synonyms || null,
     is_active: true,
-    created_at: (new Date()).toISOString()
   }
 
   try {

@@ -1,9 +1,19 @@
 <script setup lang="tsx">
-const selected = ref('')
+const slug = useSlug()
 const response = ref('')
 
+const MIN_CHARS = 3
+
 const handleNewPin = () => {
- 
+  const sel = window.quill.getSelection()
+  if (!sel) return
+
+  postPin({
+    pin: window.quill.getText(sel.index, sel.length),
+    slug,
+  })
+
+  window.quill.formatText(sel, 'underline', 'api')
 }
 
 const handleClose = () => {
@@ -24,19 +34,17 @@ const handleSelection = (range: { index: number; length: number }) => {
   if (!range) return;
 
   const updateSelectionContext = async (prompt: string, start: number, len: number) => {
-    if (prompt.length > 0 && selected.value !== prompt) {
-      selected.value = prompt;
+    if (prompt.length > MIN_CHARS) {
       window.quill.setSelection(start, len);
       const context = window.quill.getText(Math.max(0, start - 20), len + 40);
       response.value = '';
-
       for await (const chunk of aiPrompt({ context, prompt })) {
         response.value += chunk;
       }
     }
   };
 
-  if (range.length > 0) {
+  if (range.length > MIN_CHARS) {
     const prompt = window.quill.getText(range.index, range.length);
     updateSelectionContext(prompt, range.index, range.length);
   }
@@ -52,7 +60,7 @@ onUnmounted(() => {
 <template>
   <div id="floatMenu" class="absolute z-10 font-sans">
     <div class="absolute">
-      <div class="w-96 h-36 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
+      <div class="w-96 h-52 bg-slate-900 p-2 rounded shadow-md overflow-pretty">
 
         <div class="mb-16 flex flex-col gap-y-2">
           <p class="text-base text-slate-200">

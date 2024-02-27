@@ -162,11 +162,7 @@ async function GeminiGenerateContentAsStream({ prompt, context }: DefinitionRequ
 
 async function OpenAIGenerateContentAsStream({ prompt, context }: DefinitionRequest) {
   const prompts = [
-    `- Define the prompt succinctly.`,
-    `- Use the context to refine the definition.`,
-
-    `Prompt: ${prompt}`,
-    `Context: ${context}`,
+    `- Define the prompt "${prompt}" succinctly, using the context "${context}" to refine the definition.`,
   ];
 
   console.log(chalk.green('[OpenAI] Generating content as stream...'));
