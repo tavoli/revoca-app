@@ -1,6 +1,5 @@
 <script setup lang="tsx">
 import Quill from 'quill';
-import type {Op} from 'quill/core';
 import '~/quill/blots/paragraph';
 import '~/quill/blots/quote';
 import '~/quill/blots/generated';
@@ -12,17 +11,11 @@ declare global {
   }
 }
 
-const props = defineProps<{
-  sentences: Op[];
-}>()
-
 const options = {
   readOnly: true,
 }
 
 window.quill = new Quill('#content', options);
-
-window.quill.setContents(props.sentences);
 </script>
 
 <template>

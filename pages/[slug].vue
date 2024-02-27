@@ -46,11 +46,16 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     </div>
 
     <div class="flex gap-y-2 flex-col items-center" v-else>
-      <div id="content" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300" />
+      <div id="content" class="font-bookerly prose prose-lg prose-slate prose-dark text-slate-300">
+        <template v-for="sentence in sentences">
+          <p v-for="line in sentence.insert.split('\n')" :key="line">{{ line }}</p>
+        </template>
+      </div>
     </div>
 
     <ClientOnly v-if="!pending">
-      <Prose :sentences="sentences" />
+      <ScrollRestorer />
+      <Prose />
     </ClientOnly>
   </main>
 </template>

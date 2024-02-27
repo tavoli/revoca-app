@@ -211,3 +211,23 @@ export const postBook = (body: NewBook) =>
     body,
   })
 
+
+export const postScrollPosition = (slug: string, y: number) =>
+  $fetch(`/api/scroll-pos`, {
+    method: 'POST',
+    body: {
+      slug,
+      y,
+    },
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+  })
+
+export const fetchScrollPosition = (slug: string) =>
+  $fetch(`/api/scroll-pos?slug=${slug}`, {
+    headers: {
+      'Authorization': `${localStorage.getItem('token')}`,
+    },
+  })
+  .catch(() => 0)

@@ -6,3 +6,5 @@ export const kv = createClient({
 });
 
 export const pinGetKey = (slug: string) => `books:${slug}:pins`;
+
+export const scrollPosKey = (slug: string) => `books:${slug}:scroll-y`;

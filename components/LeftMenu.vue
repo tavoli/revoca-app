@@ -12,8 +12,9 @@ const onSelection = (e: any) => {
 }
 
 const cls = [
+  'GENERATED',
   'border-l-4',
-  'pl-4'
+  'pl-4',
 ]
 
 const handleInfuse = () => {
