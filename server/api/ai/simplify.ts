@@ -100,63 +100,29 @@ export default defineEventHandler(async (event) => {
 });
 
 async function generateContentAsStream(sentence: string) {
-  const MODEL_NAME = "gemini-pro";
-  const API_KEY = process.env.GEMINI_API_KEY as string;
-
-  const genAI = new GoogleGenerativeAI(API_KEY);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-
-  const generationConfig = {
-    temperature: 0.95,
-    topK: 1,
-    topP: 1,
-    maxOutputTokens: 2048,
-    candidateCount: 1,
-    stopSequences: ['[DONE]'],
-  };
-
   const prompts = [
     `- Simplify the text to make it easier to understand.`,
-    "- Ensure the meaning and essence of the text remains the same.",
-    "- Use simpler language.",
+    `- Ensure the meaning and essence of the text remains the same.`,
+    `- Use simpler language.`,
     `\n\n${sentence}`,
   ];
 
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        const result = await model.generateContentStream({
-          contents: [{ role: "user", parts: [{ text: prompts.join("\n") }] }],
-          generationConfig,
-        });
+  console.log(chalk.green('[OpenAI] Generating content as stream...'));
 
-        for await (const chunk of result.stream) {
-          if (chunk?.candidates?.length) {
-            for (const candidate of chunk.candidates) {
-              console.log(
-                chalk.yellow(
-                  `Candidate: ${candidate.content.parts}`
-                )
-              );
+  const payload: OpenAIStreamPayload = {
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: UserRole.SYSTEM,
+        content: prompts.join('\n'),
+      },
+    ],
+    temperature: 0.7,
+    max_tokens: sentence.length + 100,
+    stream: true,
+  };
 
-              const text = candidate.content.parts.map(part => part.text).join("");
-              const encodedText = new TextEncoder().encode(text);
-              controller.enqueue(encodedText);
-            }
-          } else {
-            const encodedText = new TextEncoder().encode('ERROR: No candidates found.');
-            controller.enqueue(encodedText);
-          }
-        }
-
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-  });
+  const stream = await OpenAIStream(payload);
 
   return stream;
 }
-
-
