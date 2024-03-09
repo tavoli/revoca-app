@@ -224,10 +224,11 @@ export const postScrollPosition = (slug: string, y: number) =>
     },
   })
 
-export const fetchScrollPosition = (slug: string) =>
+export const fetchScrollPosition = (slug: string): Promise<number> =>
   $fetch(`/api/scroll-pos?slug=${slug}`, {
     headers: {
       'Authorization': `${localStorage.getItem('token')}`,
     },
   })
+  .then((y) => y as number)
   .catch(() => 0)

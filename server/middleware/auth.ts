@@ -14,6 +14,7 @@ const privateRoutes = [
   '/api/ai/sentence',
   '/api/ai/split',
   '/api/ai/definition',
+  '/api/ai/modernize',
 ]
 
 /**

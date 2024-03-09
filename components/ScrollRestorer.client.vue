@@ -12,10 +12,11 @@ const debounce = (fn: Function, delay: number) => {
 const onScroll = debounce(async () => {
   const slug = useSlug();
   const generated = findGeneratedParagraphs();
+  const gap = generated.length * 24;
   const heights = calculateHeights(generated);
   const genHeight = sum(heights);
   const scrollY = window.scrollY;
-  const y = scrollY - genHeight;
+  const y = scrollY - genHeight - gap;
 
   if (y && slug) {
     postScrollPosition(slug, y);

@@ -50,6 +50,17 @@ const handleSplit = async () => {
   )
 }
 
+const handleModernize = async () => {
+  showContent.value = false
+
+  processTextCommand(
+    slug,
+    selection.value as Range,
+    'modernize',
+    [...cls, 'border-green-300']
+  )
+}
+
 const handleClickOutside = (e: MouseEvent) => {
   const target = e.target as HTMLElement
 
@@ -93,6 +104,10 @@ onUnmounted(() => {
 
         <button class="flex items center gap-2 p-1.5 text-sm font-medium text-slate-400 text-left bg-transparent w-full rounded hover:text-slate-300" @click="handleSplit">
           split text
+        </button>
+
+        <button class="flex items center gap-2 p-1.5 text-sm font-medium text-slate-400 text-left bg-transparent w-full rounded hover:text-slate-300" @click="handleModernize">
+          modernize text
         </button>
       </button>
     </div>
