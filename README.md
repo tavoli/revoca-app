@@ -10,7 +10,9 @@ Some notes:
 - Click on the "Configuration Icon" to toggle the words you want to repeat through the text.
 - Click on the "Left Paragraph Icon" to do AI actions on the text, such as summarizing it.
 
-https://github.com/tavoli/revoca-app/blob/main/assets/css/revoca_how_it_works.mp4
+
+https://github.com/tavoli/revoca-app/assets/13285112/f024c356-5dd2-4284-813e-dbab0b7d3c6f
+
 
 # Features explained
 
