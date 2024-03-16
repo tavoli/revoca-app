@@ -1,6 +1,8 @@
 <script setup lang="tsx">
 import Quill from 'quill';
 
+import '~/quill/blots/image';
+
 const emit = defineEmits(['change']);
 
 const options = {};
@@ -13,7 +15,7 @@ window.quill.on('text-change', () => {
 </script>
 
 <template>
-  <!-- just a empty div to avoid vue warning -->
+  <!-- just a empty div to avoid be bothered by vue trifle warnings -->
   <!-- the #editor target is found at the parent component -->
   <div />
 </template>

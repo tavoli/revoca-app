@@ -30,9 +30,9 @@ const onSubmit = async (e: Event) => {
     const withImage: any = form.value.ops.find((op: any) => op?.insert.image)
 
     if (withImage) {
-      const imageBase = withImage.insert.image as string
-      const type = imageBase.split(';')[0].split('/')[1]
-      const data = imageBase.split(',')[1]
+      const imageBase = withImage.insert.image
+      const type = imageBase?.url.split(';')[0].split('/')[1]
+      const data = imageBase?.url.split(',')[1]
 
       Object.assign(body, {
         ops: form.value.ops.filter((op: any) => !op.insert?.image),
@@ -85,8 +85,8 @@ const handleEditor = (values: any) => {
       <h1 class="text-2xl font-bold text-center">
         write the title of the book 
       </h1>
-      <img 
-        class="w-10/12 mx-auto my-4" 
+      <img
+        class="w-10/12 mx-auto my-4 cursor-pointer"
         src="https://via.placeholder.com/150" 
         alt="book cover" 
       />

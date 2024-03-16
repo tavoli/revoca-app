@@ -57,7 +57,7 @@ const handleSelectPin = (pin: string) => {
   <div class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="fixed inset-0 z-10 w-screen h-screen overflow-pretty bg-slate-950">
 
-      <button class="absolute top-0 right-0 z-10 p-4" @click="$router.back()">
+      <button class="absolute top-0 right-0 z-10 p-4" @click="$router.push(`/${slug}`)">
         <svg class="w-6" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#fff">
           <path d="M6 6L14 14M14 6L6 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
