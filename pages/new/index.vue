@@ -1,4 +1,4 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import { nanoid } from 'nanoid';
 
 const router = useRouter()
@@ -9,6 +9,10 @@ const form = useState(() => ({
 }))
 
 const isLoading = ref(false)
+
+onMounted(() => {
+  fetch(`/api/ping`)
+})
 
 const onSubmit = async (e: Event) => {
   e.preventDefault();
@@ -43,12 +47,18 @@ const onSubmit = async (e: Event) => {
       })
     }
 
-    postBook(body)
+    await postBook(body)
 
-    router.push({
-      name: 'config',
-      query: {slug: slugaid}
-    })
+    const pins = await fetchPinsPaginate()
+
+    if (pins.length) {
+      router.push({
+        name: 'config',
+        query: {slug: slugaid}
+      })
+    } else {
+      router.push('/books')
+    }
   } catch (error) {
     console.error(error)
   }

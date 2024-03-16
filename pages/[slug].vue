@@ -37,7 +37,6 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     <ClientOnly v-if="!pending">
       <ScrollRestorer />
       <Prose />
-      <HighlightPins />
     </ClientOnly>
   </main>
 </template>
