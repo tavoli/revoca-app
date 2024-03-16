@@ -145,9 +145,6 @@ export default defineEventHandler(async (event) => {
   const normalizedPins = pins.map((pin) => ({
     id: pin.id,
     pin: pin.pin,
-    synonyms: pin.synonyms?.split(/\n/gi),
-    definitions: pin.definitions?.split(/\n/gi),
-    partOfSpeech: pin.parts_of_speech?.split(/\n/gi),
   }))
 
   return normalizedPins

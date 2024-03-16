@@ -9,9 +9,7 @@ interface Props {
   books: any
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  books: []
-})
+const props = withDefaults(defineProps<Props>(), { books: [] })
 </script>
 
 <template>
@@ -22,7 +20,11 @@ const props = withDefaults(defineProps<Props>(), {
       :key="item.id"
       @click="gotoBook(item.slug)">
 
-      <img class="object-fit text-gray-200 rounded-b-md" :src="item.image_url" :alt="item.title" />
+      <img class="object-fit text-gray-200 rounded-b-md min-h-60"
+        :src="item.image_url" 
+        :alt="item.title" 
+      />
+
       <p class="w-full text-gray-200 absolute bottom-0 p-2 bg-blue-950 rounded-b-md flex items-center">
         {{ item.title }}
       </p>

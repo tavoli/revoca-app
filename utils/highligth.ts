@@ -32,6 +32,7 @@ function scan(delta: Delta, retain: number, pins: RegExp, pinned: RegExp) {
 
 export function highlight(delta: Delta, retain: number, pins: string[], pinned: string[]) {
   function regex(pins: string[]) {
+    if (pins.length === 0) return /$^/
     return new RegExp('\\b(' + pins.join('|') + ')\\b', 'ig')
   }
 
