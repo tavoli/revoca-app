@@ -4,6 +4,7 @@ const privateRoutes = [
   '/api/books',
   '/api/books/by-pins',
   '/api/books/toggle-pin',
+  '/api/books/paginate',
   '/api/pins',
   '/api/pins/paginate',
   '/api/sentences/paginate',
@@ -20,7 +21,6 @@ const privateRoutes = [
 /**
 const publicRoutes = [
   '/api/books/search',
-  '/api/books/paginate',
 ] */
 
 export default defineEventHandler((event) => {

@@ -16,10 +16,11 @@ export async function insertBookPin(db: Kysely<Database>, body: NewBookPin[]) {
     .execute();
 }
 
-export async function paginateBooks(db: Kysely<Database>, nextCursor: number = 0) {
+export async function paginateBooks(db: Kysely<Database>, userId: string, nextCursor: number = 0) {
   return db.selectFrom('books')
     .select(['books.id', 'title', 'slug', 'image_url'])
     .where('books.id', '>', nextCursor)
+    .where('books.user_id', '=', userId)
     .orderBy('books.id', 'asc')
     .limit(10)
     .execute();

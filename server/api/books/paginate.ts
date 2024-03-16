@@ -78,9 +78,18 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  const user = event.context.user
+
+  if (!user) {
+    throw createError({
+      status: 401,
+      data: 'Unauthorized',
+    })
+  }
+
   const nextCursor = +query.data.n
 
-  const books = await paginateBooks(db, nextCursor)
+  const books = await paginateBooks(db, user.id, nextCursor)
 
   if (books.length === 0) {
     throw createError({

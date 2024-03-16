@@ -17,7 +17,10 @@ onMounted(async () => {
   </Head>
   <div class="container mx-auto flex flex-col gap-y-10">
     <Header />
-    <List :books="data" />
+    <List :books="data"  v-if="data.length" />
+    <div v-else>
+      <p class="text-gray-200">No books found</p>
+    </div>
   </div>
 </template>
 
