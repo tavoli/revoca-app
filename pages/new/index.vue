@@ -11,6 +11,8 @@ const form = useState(() => ({
 const isLoading = ref(false)
 
 onMounted(() => {
+  // just a clever way to wake up the database
+  fetchPinsPaginate() // or
   fetch(`/api/ping`)
 })
 
