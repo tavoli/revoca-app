@@ -15,7 +15,11 @@ Here are the standout features:
 
 https://github.com/tavoli/revoca-app/assets/13285112/f024c356-5dd2-4284-813e-dbab0b7d3c6f
 
+# Flowchart of User Interaction Process in Reading App
+<img width="861" alt="app_journals" src="https://github.com/tavoli/revoca-app/assets/13285112/4b2dc982-b177-4e82-b4dd-a50838f3ce5e">
 
+# Flowchart Showing Client Server Interaction and Data Processing
+<img width="660" alt="high_level_tech_docs" src="https://github.com/tavoli/revoca-app/assets/13285112/b44cd6ca-fcde-414c-a1be-4d864de7c0a3">
 
 
 # Features explained
