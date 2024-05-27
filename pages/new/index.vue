@@ -5,7 +5,8 @@ const router = useRouter()
 
 const form = useState(() => ({
   title: '',
-  ops: [],
+  prose: '',
+  image: ''
 }))
 
 const isLoading = ref(false)
@@ -22,31 +23,22 @@ const onSubmit = async (e: Event) => {
   if (isLoading.value) return;
 
   isLoading.value = true;
-
   try {
     const slug = slugify(form.value.title)
     const slugaid = `${slug}-${nanoid(7)}`
 
     const body = {
       title: form.value.title,
-      ops: form.value.ops,
+      ops: [
+        { insert: form.value.title },
+        { insert: '\n', attributes: { header: 1 } },
+        { insert: form.value.prose.replace(/\n(?!\n)/g, ' ') }
+      ],
       slug: slugaid,
     }
 
-    const withImage: any = form.value.ops.find((op: any) => op?.insert.image)
-
-    if (withImage) {
-      const imageBase = withImage.insert.image
-      const type = imageBase?.url.split(';')[0].split('/')[1]
-      const data = imageBase?.url.split(',')[1]
-
-      Object.assign(body, {
-        ops: form.value.ops.filter((op: any) => !op.insert?.image),
-        image: {
-          type,
-          data
-        },
-      })
+    if (form.value.image) {
+      Object.assign(body, {image: form.value.image })
     }
 
     await postBook(body)
@@ -69,8 +61,17 @@ const onSubmit = async (e: Event) => {
 };
 
 const handleEditor = (values: any) => {
-  form.value.ops = values.ops
   form.value.title = values.ops[0].insert
+  const withImage: any = values.ops.find((op: any) => op?.insert.image)
+  if (withImage) {
+    const image = withImage.insert.image
+    const type = image.url.split(';')[0].split('/')[1]
+    const data = image.url.split(',')[1]
+    form.value.image = {
+      type,
+      data
+    }
+  }
 }
 </script>
 
@@ -102,12 +103,24 @@ const handleEditor = (values: any) => {
         src="https://via.placeholder.com/150" 
         alt="book cover" 
       />
-      <p>
-        write your story...
-      </p>
+    </div>
+    <div class="w-10/12 mx-auto">
+        <textarea v-model="form.prose" 
+          class="w-full bg-transparent text-slate-300 font-bookerly prose border-none outline-none" 
+          placeholder="write your story..." 
+          oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">
+</textarea>
     </div>
     <ClientOnly>
       <Editor @change="handleEditor" />
     </ClientOnly>
   </main>
 </template>
+
+<style scoped>
+  textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 200px;
+  }
+</style>

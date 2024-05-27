@@ -14,6 +14,8 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     },
   }
 )
+
+console.log(sentences)
 </script>
 
 <template>
