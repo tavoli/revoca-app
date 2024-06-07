@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import {theme} from '@/stores/theme.ts'
+
 const slug = useSlug()
 const DATA_KEY = factoryDataKeys(slug)
 
@@ -14,12 +16,10 @@ const {data: sentences, pending} = await useAsyncData(DATA_KEY.SENTENCES,
     },
   }
 )
-
-console.log(sentences)
 </script>
 
 <template>
-  <Body class="mode-dark" />
+  <Body :class="theme" />
 
   <TopMenu />
 

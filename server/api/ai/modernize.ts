@@ -45,7 +45,8 @@ export default defineEventHandler(async (event) => {
 
 async function generateContentAsStream(sentence: string) {
   const prompts = [
-    `- The text below originates from the 18th century. Please translate it into contemporary, modern English.`,
+    `- Rewrite the given text in modern, contemporary English`,
+    `- Follow dostoevsky style and tone`,
     `\n\n${sentence}`,
   ];
 

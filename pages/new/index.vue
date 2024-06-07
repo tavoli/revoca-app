@@ -76,7 +76,6 @@ const handleEditor = (values: any) => {
 </script>
 
 <template>
-  <Body class="mode-dark" />
   <main class="w-7/12 mx-auto min-h-screen">
     <header class="flex items-center justify-between w-full py-4">
       <label class="text-md text-center text-gray-400" for="raw">
@@ -104,14 +103,14 @@ const handleEditor = (values: any) => {
         alt="book cover" 
       />
     </div>
-    <div class="w-10/12 mx-auto">
-        <textarea v-model="form.prose" 
-          class="w-full bg-transparent text-slate-300 font-bookerly prose border-none outline-none" 
-          placeholder="write your story..." 
-          oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">
-</textarea>
-    </div>
     <ClientOnly>
+      <div class="w-10/12 mx-auto prose">
+        <textarea v-model="form.prose" 
+            class="w-full bg-transparent text-slate-300 font-bookerly border-none outline-none" 
+            placeholder="write your story..." 
+            oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px';">
+        </textarea>
+      </div>
       <Editor @change="handleEditor" />
     </ClientOnly>
   </main>

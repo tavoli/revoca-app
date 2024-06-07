@@ -13,7 +13,6 @@ onMounted(async () => {
 <template>
   <Head>
     <title>books</title>
-    <Body class="mode-dark" />
   </Head>
   <div class="container mx-auto flex flex-col gap-y-10">
     <Header />

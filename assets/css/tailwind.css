@@ -32,8 +32,25 @@
   }
 }
 
-.mode-dark {
+.dark {
   @apply bg-slate-950;
+  p {
+    @apply text-slate-200;
+  }
+}
+
+.sepia {
+  background-color: #f4ecd8;
+  p {
+    @apply text-slate-950
+  }
+}
+
+.light {
+  background-color: #fff;
+  p {
+    @apply text-slate-950
+  }
 }
 
 @layer components {

@@ -33,7 +33,11 @@ const setMenuTop = (value: string) => {
     <div class="flex flex-row gap-x-2">
       <GoBooksBtn />
       <GoNewBtn />
-      <GoConfigBtn />
+
+      <div class="flex-1 flex justify-end gap-2">
+        <GoConfigBtn />
+        <Toolbar />
+      </div>
     </div>
   </div>
 </template>

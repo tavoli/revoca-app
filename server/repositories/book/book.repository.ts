@@ -22,7 +22,7 @@ export async function paginateBooks(db: Kysely<Database>, userId: string, nextCu
     .where('books.id', '>', nextCursor)
     .where('books.user_id', '=', userId)
     .orderBy('books.id', 'asc')
-    .limit(10)
+    .limit(100)
     .execute();
 }
 
